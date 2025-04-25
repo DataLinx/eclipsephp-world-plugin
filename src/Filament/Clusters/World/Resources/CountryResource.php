@@ -23,6 +23,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use TangoDevIt\FilamentEmojiPicker\EmojiPickerAction;
 
 class CountryResource extends Resource implements HasShieldPermissions
 {
@@ -50,14 +51,14 @@ class CountryResource extends Resource implements HasShieldPermissions
                     ->required(),
 
                 TextInput::make('flag')
-                    ->label(__('eclipse-world::countries.form.flag.label'))
-                    ->suffixAction(function () {
-                        if (class_exists('\TangoDevIt\FilamentEmojiPicker\EmojiPickerAction')) {
-                            return \TangoDevIt\FilamentEmojiPicker\EmojiPickerAction::make('emoji-flag');
-                        }
+                    ->label(__('eclipse-world::countries.form.flag.label')),
+                    // ->suffixAction(function () {
+                    //     if (class_exists('\TangoDevIt\FilamentEmojiPicker\EmojiPickerAction')) {
+                    //         return EmojiPickerAction::make('emoji-flag');
+                    //     }
 
-                        return null;
-                    }),
+                    //     return null;
+                    // }),
 
                 TextInput::make('a3_id')
                     ->required()

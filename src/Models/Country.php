@@ -29,4 +29,32 @@ class Country extends Model
     {
         return CountryFactory::new();
     }
+
+    public function region()
+    {
+        return $this->belongsTo(Region::class, 'region_id');
+    }
+
+    public function specialRegions()
+    {
+        return $this->belongsToMany(Region::class, 'world_country_in_special_region', 'country_id', 'region_id')
+            ->withPivot('start_date', 'end_date')
+            ->withTimestamps();
+    }
+
+    /**
+    * Check if country belongs to special region (with dates considered)
+    */
+    public function inSpecialRegion(string $code): bool
+    {
+        $now = now();
+
+        return $this->specialRegions()
+            ->where('code', $code)
+            ->where('start_date', '<=', $now)
+            ->where(function ($query) use ($now) {
+                $query->whereNull('end_date')->orWhere('end_date', '>=', $now);
+            })
+            ->exists();
+    }
 }
