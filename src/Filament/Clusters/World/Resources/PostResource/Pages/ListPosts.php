@@ -43,7 +43,7 @@ class ListPosts extends ListRecords
                     Notification::make()
                         ->title(__('eclipse-world::posts.import.success_title'))
                         ->body(__('eclipse-world::posts.import.success_message', [
-                            'country' => __('eclipse-world::posts.import.countries.' . $data['country_id'])
+                            'country' => __('eclipse-world::posts.import.countries.'.$data['country_id']),
                         ]))
                         ->success()
                         ->send();

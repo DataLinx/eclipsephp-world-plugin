@@ -94,7 +94,7 @@ test('new post can be created', function () {
     $post = Post::where('code', $data['code'])
         ->where('country_id', $data['country_id'])
         ->first();
-    
+
     expect($post)->toBeObject();
 
     foreach ($data as $key => $val) {
@@ -202,7 +202,7 @@ test('filtering by country works', function () {
 
 test('cannot create duplicate country-post code combo', function () {
     $country = Country::factory()->create(['id' => 'SI']);
-    
+
     // Create first post
     $firstPost = Post::factory()->create([
         'country_id' => $country->id,
@@ -265,7 +265,7 @@ test('country flag is displayed in table', function () {
         'name' => 'Slovenia',
         'flag' => '🇸🇮',
     ]);
-    
+
     $post = Post::factory()->create([
         'country_id' => $country->id,
         'code' => '1000',
@@ -279,14 +279,14 @@ test('country flag is displayed in table', function () {
 
 test('updating post respects unique constraint', function () {
     $country = Country::factory()->create(['id' => 'SI']);
-    
+
     // Create two posts
     $post1 = Post::factory()->create([
         'country_id' => $country->id,
         'code' => '1000',
         'name' => 'Ljubljana',
     ]);
-    
+
     $post2 = Post::factory()->create([
         'country_id' => $country->id,
         'code' => '2000',
@@ -309,7 +309,7 @@ test('updating post respects unique constraint', function () {
 
 test('can update post with same code (no change)', function () {
     $country = Country::factory()->create(['id' => 'SI']);
-    
+
     $post = Post::factory()->create([
         'country_id' => $country->id,
         'code' => '1000',
@@ -327,4 +327,4 @@ test('can update post with same code (no change)', function () {
     $post->refresh();
     expect($post->code)->toBe('1000');
     expect($post->name)->toBe('Updated Ljubljana');
-}); 
+});

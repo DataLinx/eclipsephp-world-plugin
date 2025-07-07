@@ -3,6 +3,7 @@
 namespace Eclipse\World\Jobs;
 
 use Eclipse\World\Models\Post;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -10,7 +11,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class ImportPosts implements ShouldQueue
 {
@@ -33,7 +33,7 @@ class ImportPosts implements ShouldQueue
      */
     public function handle(): void
     {
-        if (!in_array($this->countryId, ['SI', 'HR'])) {
+        if (! in_array($this->countryId, ['SI', 'HR'])) {
             throw new Exception("Country {$this->countryId} not supported for import");
         }
 
@@ -82,17 +82,17 @@ class ImportPosts implements ShouldQueue
     private function getData(int $batchSize, int $offset): array
     {
         $url = self::OPENDATASOFT_RECORDS_API_URL
-            . "search/?dataset=geonames-postal-code@public"
-            . "&q="
-            . "&rows={$batchSize}"
-            . "&start={$offset}"
-            . "&sort=postal_code"
-            . "&refine.country_code={$this->countryId}";
+            .'search/?dataset=geonames-postal-code@public'
+            .'&q='
+            ."&rows={$batchSize}"
+            ."&start={$offset}"
+            .'&sort=postal_code'
+            ."&refine.country_code={$this->countryId}";
 
         $response = Http::get($url);
 
-        if (!$response->successful()) {
-            throw new Exception("Failed to fetch data from Opendatasoft API: " . $response->status());
+        if (! $response->successful()) {
+            throw new Exception('Failed to fetch data from Opendatasoft API: '.$response->status());
         }
 
         $data = $response->json();

@@ -28,8 +28,9 @@ class ImportPostsCommand extends Command
     {
         $country = strtoupper($this->argument('country'));
 
-        if (!in_array($country, ['SI', 'HR'])) {
+        if (! in_array($country, ['SI', 'HR'])) {
             $this->error('Invalid country code. Only SI and HR are supported.');
+
             return self::FAILURE;
         }
 

@@ -20,8 +20,8 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -76,7 +76,7 @@ class PostResource extends Resource implements HasShieldPermissions
             ->columns([
                 TextColumn::make('country.name')
                     ->label(__('eclipse-world::posts.table.country.label'))
-                    ->formatStateUsing(fn(string $state, Post $record) => trim("{$record->country->flag} {$state}"))
+                    ->formatStateUsing(fn (string $state, Post $record) => trim("{$record->country->flag} {$state}"))
                     ->searchable()
                     ->sortable(),
 
@@ -110,7 +110,7 @@ class PostResource extends Resource implements HasShieldPermissions
                     ForceDeleteAction::make()
                         ->label(__('eclipse-world::posts.actions.force_delete.label'))
                         ->modalHeading(__('eclipse-world::posts.actions.force_delete.heading'))
-                        ->modalDescription(fn(Post $record): string => __('eclipse-world::posts.actions.force_delete.description', [
+                        ->modalDescription(fn (Post $record): string => __('eclipse-world::posts.actions.force_delete.description', [
                             'name' => $record->name,
                         ])),
                 ]),
