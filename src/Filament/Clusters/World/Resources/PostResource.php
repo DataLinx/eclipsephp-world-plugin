@@ -8,7 +8,9 @@ use Eclipse\World\Models\Post;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -19,9 +21,11 @@ use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Validation\Rule;
 
 class PostResource extends Resource implements HasShieldPermissions
 {
@@ -40,13 +44,29 @@ class PostResource extends Resource implements HasShieldPermissions
                 Select::make('country_id')
                     ->relationship('country', 'name')
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->label(__('eclipse-world::posts.form.country_id.label'))
+                    ->live(),
 
                 TextInput::make('code')
-                    ->required(),
+                    ->required()
+                    ->label(__('eclipse-world::posts.form.code.label'))
+                    ->rules(function (Get $get, ?Post $record) {
+                        return [
+                            'required',
+                            'string',
+                            Rule::unique('world_posts', 'code')
+                                ->where('country_id', $get('country_id'))
+                                ->ignore($record?->id),
+                        ];
+                    })
+                    ->validationMessages([
+                        'unique' => __('eclipse-world::posts.validation.unique_country_code'),
+                    ]),
 
                 TextInput::make('name')
-                    ->required(),
+                    ->required()
+                    ->label(__('eclipse-world::posts.form.name.label')),
             ]);
     }
 
@@ -55,29 +75,54 @@ class PostResource extends Resource implements HasShieldPermissions
         return $table
             ->columns([
                 TextColumn::make('country.name')
+                    ->label(__('eclipse-world::posts.table.country.label'))
+                    ->formatStateUsing(fn(string $state, Post $record) => trim("{$record->country->flag} {$state}"))
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('code'),
+                TextColumn::make('code')
+                    ->label(__('eclipse-world::posts.table.code.label')),
 
                 TextColumn::make('name')
+                    ->label(__('eclipse-world::posts.table.name.label'))
                     ->searchable()
                     ->sortable(),
             ])
             ->filters([
+                SelectFilter::make('country_id')
+                    ->label(__('eclipse-world::posts.filter.country.label'))
+                    ->relationship('country', 'name')
+                    ->searchable()
+                    ->preload(),
                 TrashedFilter::make(),
             ])
             ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
-                RestoreAction::make(),
-                ForceDeleteAction::make(),
+                EditAction::make()
+                    ->label(__('eclipse-world::posts.actions.edit.label'))
+                    ->modalHeading(__('eclipse-world::posts.actions.edit.heading')),
+                ActionGroup::make([
+                    DeleteAction::make()
+                        ->label(__('eclipse-world::posts.actions.delete.label'))
+                        ->modalHeading(__('eclipse-world::posts.actions.delete.heading')),
+                    RestoreAction::make()
+                        ->label(__('eclipse-world::posts.actions.restore.label'))
+                        ->modalHeading(__('eclipse-world::posts.actions.restore.heading')),
+                    ForceDeleteAction::make()
+                        ->label(__('eclipse-world::posts.actions.force_delete.label'))
+                        ->modalHeading(__('eclipse-world::posts.actions.force_delete.heading'))
+                        ->modalDescription(fn(Post $record): string => __('eclipse-world::posts.actions.force_delete.description', [
+                            'name' => $record->name,
+                        ])),
+                ]),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->label(__('eclipse-world::posts.actions.delete.label')),
+                    RestoreBulkAction::make()
+                        ->label(__('eclipse-world::posts.actions.restore.label')),
+                    ForceDeleteBulkAction::make()
+                        ->label(__('eclipse-world::posts.actions.force_delete.label')),
                 ]),
             ]);
     }
@@ -86,8 +131,6 @@ class PostResource extends Resource implements HasShieldPermissions
     {
         return [
             'index' => PostResource\Pages\ListPosts::route('/'),
-            'create' => PostResource\Pages\CreatePost::route('/create'),
-            'edit' => PostResource\Pages\EditPost::route('/{record}/edit'),
         ];
     }
 
@@ -112,5 +155,20 @@ class PostResource extends Resource implements HasShieldPermissions
             'force_delete',
             'force_delete_any',
         ];
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return __('eclipse-world::posts.nav_label');
+    }
+
+    public static function getBreadcrumb(): string
+    {
+        return __('eclipse-world::posts.breadcrumb');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('eclipse-world::posts.plural');
     }
 }
