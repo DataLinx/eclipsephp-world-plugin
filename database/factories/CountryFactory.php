@@ -27,6 +27,7 @@ class CountryFactory extends Factory
             'num_code' => str_pad(fake()->numberBetween(1, 999), 3, '0', STR_PAD_LEFT),
             'name' => fake()->country(),
             'flag' => fake()->emoji(),
+            'region_id' => null,
         ];
     }
 }

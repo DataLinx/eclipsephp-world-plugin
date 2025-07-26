@@ -4,6 +4,7 @@ namespace Eclipse\World\Jobs;
 
 use Eclipse\Core\Models\User;
 use Eclipse\World\Models\Country;
+use Eclipse\World\Models\Region;
 use Eclipse\World\Notifications\ImportFinishedNotification;
 use Exception;
 use Illuminate\Bus\Queueable;
@@ -41,6 +42,9 @@ class ImportCountries implements ShouldQueue
         $user = $this->userId ? User::find($this->userId) : null;
 
         try {
+            // First, import/update regions
+            $this->importRegions();
+
             // Load existing countries into an associative array
             $existingCountries = Country::withTrashed()->get()->keyBy('id');
 
@@ -62,6 +66,7 @@ class ImportCountries implements ShouldQueue
                     'num_code' => $rawData['ccn3'],
                     'name' => $rawData['name']['common'],
                     'flag' => $rawData['flag'],
+                    'region_id' => $this->getRegionIdForCountry($rawData),
                 ];
 
                 if (isset($existingCountries[$data['id']])) {
@@ -82,5 +87,75 @@ class ImportCountries implements ShouldQueue
             }
             throw $e;
         }
+    }
+
+    private function importRegions(): void
+    {
+        $geographicalRegions = $this->getGeographicalRegionsStructure();
+
+        foreach ($geographicalRegions as $parentName => $subRegions) {
+            $parent = Region::updateOrCreate(
+                ['name' => $parentName, 'is_special' => false],
+                ['code' => null, 'parent_id' => null]
+            );
+
+            foreach ($subRegions as $subRegionName) {
+                Region::updateOrCreate(
+                    ['name' => $subRegionName, 'is_special' => false],
+                    ['code' => null, 'parent_id' => $parent->id]
+                );
+            }
+        }
+    }
+
+    private function getGeographicalRegionsStructure(): array
+    {
+        return [
+            'Africa' => [
+                'Eastern Africa',
+                'Middle Africa',
+                'Northern Africa',
+                'Southern Africa',
+                'Western Africa',
+            ],
+            'Americas' => [
+                'Caribbean',
+                'Central America',
+                'North America',
+                'South America',
+            ],
+            'Asia' => [
+                'Central Asia',
+                'Eastern Asia',
+                'South-Eastern Asia',
+                'Southern Asia',
+                'Western Asia',
+            ],
+            'Europe' => [
+                'Central Europe',
+                'Eastern Europe',
+                'Northern Europe',
+                'Southeast Europe',
+                'Southern Europe',
+                'Western Europe',
+            ],
+            'Oceania' => [
+                'Australia and New Zealand',
+                'Melanesia',
+                'Micronesia',
+                'Polynesia',
+            ],
+        ];
+    }
+
+    private function getRegionIdForCountry(array $countryData): ?int
+    {
+        if (! isset($countryData['subregion'])) {
+            return null;
+        }
+
+        return Region::where('name', $countryData['subregion'])
+            ->where('is_special', false)
+            ->value('id');
     }
 }

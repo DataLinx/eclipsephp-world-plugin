@@ -22,6 +22,12 @@ return [
         'num_code' => [
             'label' => 'Num. Code',
         ],
+        'region' => [
+            'label' => 'Region',
+        ],
+        'special_regions' => [
+            'label' => 'Special Regions',
+        ],
     ],
 
     'actions' => [
@@ -67,6 +73,10 @@ return [
             'label' => 'Numeric code',
             'helper' => 'Numeric code (ISO-3166)',
         ],
+        'region' => [
+            'label' => 'Geographical Region',
+            'helper' => 'The geographical region this country belongs to',
+        ],
     ],
 
     'import' => [
@@ -84,6 +94,12 @@ return [
         'failed' => [
             'title' => 'Countries Import Failed',
             'message' => 'Failed to import countries data.',
+        ],
+    ],
+
+    'filters' => [
+        'region' => [
+            'label' => 'Region',
         ],
     ],
 ];

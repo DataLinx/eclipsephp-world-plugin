@@ -6,6 +6,7 @@ use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Eclipse\World\Filament\Clusters\World;
 use Eclipse\World\Filament\Clusters\World\Resources\CountryResource\Pages;
 use Eclipse\World\Models\Country;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -19,6 +20,7 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,6 +72,13 @@ class CountryResource extends Resource implements HasShieldPermissions
                     ->length(3)
                     ->label(__('eclipse-world::countries.form.num_code.label'))
                     ->helperText(__('eclipse-world::countries.form.num_code.helper')),
+
+                Select::make('region_id')
+                    ->label(__('eclipse-world::countries.form.region.label'))
+                    ->relationship('region', 'name', fn ($query) => $query->where('is_special', false))
+                    ->searchable()
+                    ->preload()
+                    ->helperText(__('eclipse-world::countries.form.region.helper')),
             ]);
     }
 
@@ -106,8 +115,25 @@ class CountryResource extends Resource implements HasShieldPermissions
                     ->searchable()
                     ->sortable()
                     ->width(100),
+
+                TextColumn::make('region.name')
+                    ->label(__('eclipse-world::countries.table.region.label'))
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('—'),
+
+                TextColumn::make('special_regions')
+                    ->label(__('eclipse-world::countries.table.special_regions.label'))
+                    ->getStateUsing(fn ($record) => $record->getSpecialRegionsAt()->pluck('name')->join(', '))
+                    ->placeholder('—')
+                    ->wrap(),
             ])
             ->filters([
+                SelectFilter::make('region_id')
+                    ->label(__('eclipse-world::countries.filters.region.label'))
+                    ->relationship('region', 'name', fn ($query) => $query->where('is_special', false))
+                    ->searchable()
+                    ->preload(),
                 TrashedFilter::make(),
             ])
             ->actions([
