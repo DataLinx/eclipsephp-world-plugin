@@ -6,6 +6,9 @@ use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Eclipse\World\Filament\Clusters\World;
 use Eclipse\World\Filament\Clusters\World\Resources\CountryResource\Pages;
 use Eclipse\World\Models\Country;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -19,6 +22,7 @@ use Filament\Tables\Actions\ForceDeleteBulkAction;
 use Filament\Tables\Actions\RestoreAction;
 use Filament\Tables\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -70,6 +74,69 @@ class CountryResource extends Resource implements HasShieldPermissions
                     ->length(3)
                     ->label(__('eclipse-world::countries.form.num_code.label'))
                     ->helperText(__('eclipse-world::countries.form.num_code.helper')),
+
+                Select::make('region_id')
+                    ->label(__('eclipse-world::countries.form.region.label'))
+                    ->relationship('region', 'name', fn ($query) => $query->where('is_special', false))
+                    ->searchable()
+                    ->preload()
+                    ->helperText(__('eclipse-world::countries.form.region.helper')),
+
+                Repeater::make('countryInSpecialRegions')
+                    ->relationship()
+                    ->label(__('eclipse-world::countries.form.special_regions.label'))
+                    ->columns(3)
+                    ->columnSpan(2)
+                    ->createItemButtonLabel(__('eclipse-world::countries.form.special_regions.add_button'))
+                    ->defaultItems(0)
+                    ->minItems(0)
+                    ->schema([
+                        Select::make('region_id')
+                            ->relationship('region', 'name', fn ($query) => $query->where('is_special', true))
+                            ->searchable()
+                            ->preload()
+                            ->label(__('eclipse-world::countries.form.special_regions.region_label'))
+                            ->rules([
+                                function ($get) {
+                                    return function (string $attribute, $value, \Closure $fail) use ($get) {
+                                        if (! $value) {
+                                            return;
+                                        }
+
+                                        $countryId = $get('../../id');
+                                        $currentRecordId = $get('id');
+
+                                        if (! $countryId) {
+                                            return;
+                                        }
+
+                                        // Check for any existing membership with same country and region
+                                        $query = \Eclipse\World\Models\CountryInSpecialRegion::where('country_id', $countryId)
+                                            ->where('region_id', $value);
+
+                                        // Exclude current record when editing
+                                        if ($currentRecordId) {
+                                            $query->where('id', '!=', $currentRecordId);
+                                        }
+
+                                        if ($query->exists()) {
+                                            $regionName = \Eclipse\World\Models\Region::find($value)?->name ?? __('eclipse-world::countries.validation.unknown_region');
+                                            $fail(__('eclipse-world::countries.validation.duplicate_special_region_membership', [
+                                                'region' => $regionName,
+                                            ]));
+                                        }
+                                    };
+                                },
+                            ]),
+
+                        DatePicker::make('start_date')
+                            ->required()
+                            ->label(__('eclipse-world::countries.form.special_regions.start_date_label')),
+
+                        DatePicker::make('end_date')
+                            ->nullable()
+                            ->label(__('eclipse-world::countries.form.special_regions.end_date_label')),
+                    ]),
             ]);
     }
 
@@ -106,8 +173,48 @@ class CountryResource extends Resource implements HasShieldPermissions
                     ->searchable()
                     ->sortable()
                     ->width(100),
+
+                TextColumn::make('region.name')
+                    ->label(__('eclipse-world::countries.table.region.label'))
+                    ->searchable()
+                    ->sortable()
+                    ->placeholder('—'),
+
+                TextColumn::make('special_regions')
+                    ->label(__('eclipse-world::countries.table.special_regions.label'))
+                    ->getStateUsing(fn ($record) => $record->getSpecialRegionsAt()->pluck('name')->join(', '))
+                    ->placeholder('—')
+                    ->wrap(),
             ])
             ->filters([
+                SelectFilter::make('region_id')
+                    ->label(__('eclipse-world::countries.filters.geographical_region.label'))
+                    ->relationship('region', 'name', fn ($query) => $query->where('is_special', false))
+                    ->searchable()
+                    ->preload(),
+                SelectFilter::make('special_regions')
+                    ->label(__('eclipse-world::countries.filters.special_region.label'))
+                    ->options(function () {
+                        return \Eclipse\World\Models\Region::where('is_special', true)
+                            ->pluck('name', 'id')
+                            ->toArray();
+                    })
+                    ->query(function (Builder $query, array $data): Builder {
+                        if (! empty($data['value'])) {
+                            return $query->whereHas('specialRegions', function (Builder $query) use ($data) {
+                                $query->where('world_regions.id', $data['value'])
+                                    ->where('world_country_in_special_region.start_date', '<=', now())
+                                    ->where(function ($query) {
+                                        $query->whereNull('world_country_in_special_region.end_date')
+                                            ->orWhere('world_country_in_special_region.end_date', '>=', now());
+                                    });
+                            });
+                        }
+
+                        return $query;
+                    })
+                    ->searchable()
+                    ->preload(),
                 TrashedFilter::make(),
             ])
             ->actions([

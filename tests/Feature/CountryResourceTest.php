@@ -3,6 +3,7 @@
 use Eclipse\World\Filament\Clusters\World\Resources\CountryResource;
 use Eclipse\World\Filament\Clusters\World\Resources\CountryResource\Pages\ListCountries;
 use Eclipse\World\Models\Country;
+use Eclipse\World\Models\Region;
 
 use function Pest\Livewire\livewire;
 
@@ -149,4 +150,42 @@ test('country can be force deleted', function () {
         ->assertHasNoTableActionErrors();
 
     $this->assertModelMissing($country);
+});
+
+test('country can be assigned to a region', function () {
+    $region = Region::factory()->geographical()->create();
+    $country = Country::factory()->create();
+
+    $data = ['region_id' => $region->id];
+
+    livewire(ListCountries::class)
+        ->callTableAction('edit', $country, $data)
+        ->assertHasNoTableActionErrors();
+
+    $country->refresh();
+    expect($country->region_id)->toEqual($region->id);
+    expect($country->region->name)->toEqual($region->name);
+});
+
+test('countries can be filtered by region', function () {
+    $region1 = Region::factory()->geographical()->create();
+    $region2 = Region::factory()->geographical()->create();
+
+    $country1 = Country::factory()->create(['region_id' => $region1->id]);
+    $country2 = Country::factory()->create(['region_id' => $region2->id]);
+    $country3 = Country::factory()->create(['region_id' => null]);
+
+    livewire(ListCountries::class)
+        ->filterTable('region_id', $region1->id)
+        ->assertCanSeeTableRecords([$country1])
+        ->assertCanNotSeeTableRecords([$country2, $country3]);
+});
+
+test('region column is displayed in countries table', function () {
+    $region = Region::factory()->geographical()->create(['name' => 'Test Region']);
+    $country = Country::factory()->create(['region_id' => $region->id]);
+
+    livewire(ListCountries::class)
+        ->assertCanSeeTableRecords([$country])
+        ->assertTableColumnExists('region.name');
 });
