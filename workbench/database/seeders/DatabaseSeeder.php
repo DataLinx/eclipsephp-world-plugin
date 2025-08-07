@@ -1,10 +1,9 @@
 <?php
 
-namespace Workbench\Database\Seeders;
+namespace App\World\Workbench\Database\Seeders;
 
 use Illuminate\Database\Seeder;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Workbench\Database\Factories\UserFactory;
+use App\World\Workbench\Database\Seeders\WorkbenchDatabaseSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +12,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // UserFactory::new()->times(10)->create();
-
-        UserFactory::new()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Call the workbench database seeder
+        $this->call(WorkbenchDatabaseSeeder::class);
     }
 }

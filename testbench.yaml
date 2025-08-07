@@ -1,13 +1,13 @@
 laravel: '@testbench'
 
 providers:
-  - Workbench\App\Providers\WorkbenchServiceProvider
+  - App\World\Workbench\Providers\WorkbenchServiceProvider
 
 migrations:
   - workbench/database/migrations
 
 seeders:
-  - Workbench\Database\Seeders\DatabaseSeeder
+  - DatabaseSeeder
 
 workbench:
   start: '/'
@@ -30,3 +30,6 @@ workbench:
     - from: storage
       to: workbench/storage
       reverse: true
+  exclude:
+    - workbench/app/Models/User.php
+    - workbench/database/seeders/DatabaseSeeder.php

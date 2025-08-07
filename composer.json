@@ -34,15 +34,16 @@
     "autoload-dev": {
         "psr-4": {
             "Tests\\": "tests/",
-            "Workbench\\App\\": "workbench/app/",
-            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
-            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+            "App\\World\\Workbench\\": "workbench/app/",
+            "App\\World\\Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "App\\World\\Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
         }
     },
     "require": {
         "php": "^8.2",
         "bezhansalleh/filament-shield": "^3.3",
         "datalinx/php-utils": "^2.5",
+        "eclipsephp/common": "dev-main",
         "filament/filament": "^3.3",
         "laravel/framework": "^11.0",
         "spatie/laravel-package-tools": "^1.19"

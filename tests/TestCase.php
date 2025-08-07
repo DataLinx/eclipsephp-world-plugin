@@ -4,7 +4,7 @@ namespace Tests;
 
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Workbench\App\Models\User;
+use App\World\Workbench\Models\User;
 
 abstract class TestCase extends BaseTestCase
 {

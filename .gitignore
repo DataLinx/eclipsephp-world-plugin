@@ -12,3 +12,12 @@
 /node_modules
 /phpunit.xml
 /vendor
+/storage/*
+!/storage/.gitkeep
+!/storage/framework/cache/.gitkeep
+!/storage/framework/cache/data/.gitkeep
+!/storage/framework/sessions/.gitkeep
+!/storage/framework/views/.gitkeep
+!/storage/logs/
+!/storage/logs/.gitkeep
+/storage/logs/horizon.log

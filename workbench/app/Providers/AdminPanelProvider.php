@@ -1,6 +1,6 @@
 <?php
 
-namespace Workbench\App\Providers;
+namespace App\World\Workbench\Providers;
 
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Eclipse\World\EclipseWorld;
