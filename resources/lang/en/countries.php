@@ -22,6 +22,12 @@ return [
         'num_code' => [
             'label' => 'Num. Code',
         ],
+        'region' => [
+            'label' => 'Region',
+        ],
+        'special_regions' => [
+            'label' => 'Special Regions',
+        ],
     ],
 
     'actions' => [
@@ -67,6 +73,18 @@ return [
             'label' => 'Numeric code',
             'helper' => 'Numeric code (ISO-3166)',
         ],
+        'region' => [
+            'label' => 'Geographical Region',
+            'helper' => 'The geographical region this country belongs to',
+        ],
+        'special_regions' => [
+            'label' => 'Special Regions',
+            'helper' => 'Special regions this country belongs to (e.g., European Union)',
+            'add_button' => 'Add Special Region',
+            'region_label' => 'Region',
+            'start_date_label' => 'Start Date',
+            'end_date_label' => 'End Date',
+        ],
     ],
 
     'import' => [
@@ -85,5 +103,19 @@ return [
         'failed' => [
             'title' => 'Countries Import failed',
         ],
+    ],
+
+    'filters' => [
+        'geographical_region' => [
+            'label' => 'Geographical Region',
+        ],
+        'special_region' => [
+            'label' => 'Special Region',
+        ],
+    ],
+
+    'validation' => [
+        'duplicate_special_region_membership' => 'This country is already a member of :region.',
+        'unknown_region' => 'this region',
     ],
 ];

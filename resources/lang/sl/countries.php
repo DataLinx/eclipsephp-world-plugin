@@ -22,6 +22,12 @@ return [
         'num_code' => [
             'label' => 'Num. šifra',
         ],
+        'region' => [
+            'label' => 'Regija',
+        ],
+        'special_regions' => [
+            'label' => 'Posebne regije',
+        ],
     ],
 
     'actions' => [
@@ -67,6 +73,18 @@ return [
             'label' => 'Num. šifra',
             'helper' => 'Numerična šifra (ISO-3166)',
         ],
+        'region' => [
+            'label' => 'Geografska regija',
+            'helper' => 'Geografska regija, ki ji ta država pripada',
+        ],
+        'special_regions' => [
+            'label' => 'Posebne regije',
+            'helper' => 'Posebne regije, ki jim ta država pripada (npr. Evropska unija)',
+            'add_button' => 'Dodaj posebno regijo',
+            'region_label' => 'Regija',
+            'start_date_label' => 'Datum začetka',
+            'end_date_label' => 'Datum konca',
+        ],
     ],
 
     'import' => [
@@ -85,5 +103,19 @@ return [
         'failed' => [
             'title' => 'Uvoz držav neuspešen',
         ],
+    ],
+
+    'filters' => [
+        'geographical_region' => [
+            'label' => 'Geografska regija',
+        ],
+        'special_region' => [
+            'label' => 'Posebna regija',
+        ],
+    ],
+
+    'validation' => [
+        'duplicate_special_region_membership' => 'Ta država je že članica regije :region.',
+        'unknown_region' => 'te regije',
     ],
 ];
