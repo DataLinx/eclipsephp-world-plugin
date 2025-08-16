@@ -1,3 +1,7 @@
 .env
 .env.dusk
 storage
+stubs/
+resources/views/vendor/
+lang/
+public/
