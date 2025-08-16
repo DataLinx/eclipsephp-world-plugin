@@ -7,6 +7,7 @@ use Eclipse\World\Models\Country;
 use Eclipse\World\Models\Region;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
 
 class ImportCountries extends QueueableJob
 {
@@ -23,10 +24,16 @@ class ImportCountries extends QueueableJob
         $existingCountries = Country::withTrashed()->get()->keyBy('id');
 
         // Load new country data
-        $countries = json_decode(file_get_contents('https://raw.githubusercontent.com/mledoze/countries/master/dist/countries.json'), true);
+        $response = Http::get('https://raw.githubusercontent.com/mledoze/countries/master/dist/countries.json');
+
+        if (! $response->successful()) {
+            throw new Exception('Failed to fetch countries data: '.$response->status());
+        }
+
+        $countries = $response->json();
 
         if (! $countries) {
-            throw new Exception('Failed to fetch or parse countries data');
+            throw new Exception('Failed to parse countries data');
         }
 
         foreach ($countries as $rawData) {

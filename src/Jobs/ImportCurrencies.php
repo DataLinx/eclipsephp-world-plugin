@@ -5,6 +5,7 @@ namespace Eclipse\World\Jobs;
 use Eclipse\Common\Foundation\Jobs\QueueableJob;
 use Eclipse\World\Models\Currency;
 use Exception;
+use Illuminate\Support\Facades\Http;
 
 class ImportCurrencies extends QueueableJob
 {
@@ -18,10 +19,16 @@ class ImportCurrencies extends QueueableJob
         $existingCurrencies = Currency::withTrashed()->get()->keyBy('id');
 
         // Load new currency data from REST Countries API
-        $countries = json_decode(file_get_contents('https://raw.githubusercontent.com/mledoze/countries/master/dist/countries.json'), true);
+        $response = Http::get('https://raw.githubusercontent.com/mledoze/countries/master/dist/countries.json');
+
+        if (! $response->successful()) {
+            throw new Exception('Failed to fetch countries data: '.$response->status());
+        }
+
+        $countries = $response->json();
 
         if (! $countries) {
-            throw new Exception('Failed to fetch or parse countries data');
+            throw new Exception('Failed to parse countries data');
         }
 
         $processedCurrencies = [];
