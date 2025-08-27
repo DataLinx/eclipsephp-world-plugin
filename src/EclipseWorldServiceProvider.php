@@ -4,6 +4,7 @@ namespace Eclipse\World;
 
 use Eclipse\World\Console\Commands\ImportCommand;
 use Eclipse\World\Console\Commands\ImportPostsCommand;
+use Eclipse\World\Console\Commands\ImportTariffCodesCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -19,6 +20,7 @@ class EclipseWorldServiceProvider extends PackageServiceProvider
             ->hasCommands([
                 ImportCommand::class,
                 ImportPostsCommand::class,
+                ImportTariffCodesCommand::class,
             ])
             ->discoversMigrations()
             ->runsMigrations();
