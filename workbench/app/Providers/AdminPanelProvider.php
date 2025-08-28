@@ -10,15 +10,14 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Facades\FilamentView;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Workbench\App\Http\Middleware\WorkbenchBootstrap;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -39,6 +38,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                WorkbenchBootstrap::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
@@ -47,6 +47,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
                 EclipseWorld::make(),
             ])
+            ->viteTheme(false)
             ->pages([
                 Dashboard::class,
             ]);
@@ -55,7 +56,5 @@ class AdminPanelProvider extends PanelProvider
     public function register(): void
     {
         parent::register();
-
-        FilamentView::registerRenderHook('panels::body.end', fn (): string => Blade::render("@vite('resources/js/app.js')"));
     }
 }

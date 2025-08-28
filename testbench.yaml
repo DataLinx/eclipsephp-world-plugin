@@ -1,13 +1,21 @@
 laravel: '@testbench'
 
+env:
+  - DB_CONNECTION=sqlite
+  - DB_DATABASE=/app/workbench/database/database.sqlite
+  - APP_KEY=base64:ZQvPGC7uVADkjOgtGIIuCI8u3/Pzu+VaRObIbHsgjCc=
+  - APP_ENV=local
+  - APP_DEBUG=true
+  - SESSION_DRIVER=database
+  - CACHE_STORE=database
+  - QUEUE_CONNECTION=sync
+
 providers:
   - Workbench\App\Providers\WorkbenchServiceProvider
 
 migrations:
   - workbench/database/migrations
-
-seeders:
-  - Workbench\Database\Seeders\DatabaseSeeder
+  - database/migrations
 
 workbench:
   start: '/'
@@ -16,7 +24,7 @@ workbench:
   discovers:
     web: true
     api: false
-    commands: false
+    commands: true
     components: false
     views: false
   build:
@@ -26,7 +34,3 @@ workbench:
     - migrate-fresh
   assets:
     - laravel-assets
-  sync:
-    - from: storage
-      to: workbench/storage
-      reverse: true

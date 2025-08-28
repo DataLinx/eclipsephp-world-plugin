@@ -72,9 +72,11 @@
             "@php vendor/bin/testbench serve --ansi"
         ],
         "setup": [
+            "@php -r \"if (!file_exists('workbench/.env')) { copy('workbench/.env.example', 'workbench/.env'); echo '.env file created from .env.example\\n'; }\"",
+            "@php vendor/bin/testbench key:generate --ansi",
             "npm install",
-            "@php vendor/bin/testbench vendor:publish --provider='Spatie\\Permission\\PermissionServiceProvider'",
             "@php vendor/bin/testbench vendor:publish --tag='filament-shield-config'",
+            "@php vendor/bin/testbench filament:assets",
             "@php vendor/bin/testbench package:sync-skeleton"
         ]
     },

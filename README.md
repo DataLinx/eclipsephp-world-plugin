@@ -59,6 +59,25 @@ Should you want to contribute, please see the development guidelines in the [Dat
     ````
 4. You can now develop and run tests. Happy coding 😉
 
+#### Workbench + Lando (browser testing)
+
+This package ships with a minimal Testbench Workbench so you can run the Filament UI without a separate app:
+
+1. Clone the repository
+2. Start the container
+   ```shell
+   lando start
+   ```
+
+3. Open the admin panel at `https://eclipse-world-plugin.lndo.site/admin`
+
+**No login required** - you'll be automatically signed in as a test user with full permissions.
+
+Notes:
+- The container serves `workbench/public` as the webroot.
+- Use `lando test` for `package:test` and `lando testbench` for other Testbench commands.
+- No Telescope, websockets or health checks are enabled to keep the setup minimal.
+
 💡 To manually test the plugin in the browser, see our [recommendation](https://github.com/DataLinx/eclipsephp-core/blob/main/docs/Documentation.md#-plugin-development), which is also [how Filament suggests package development](https://filamentphp.com/docs/3.x/support/contributing#developing-with-a-local-copy-of-filament).  
 However, the plugin should be universal and not dependent on our app setup or core package.
 
