@@ -335,7 +335,7 @@ class ImportTariffCodes extends QueueableJob
 
         $hierarchicalParts = [];
 
-        $hierarchicalParts[] = strtoupper($name);
+        $hierarchicalParts[] = $this->capitalizeFirst($name);
 
         $currentCode = $code;
         while (strlen($currentCode) > 2) {
@@ -345,7 +345,7 @@ class ImportTariffCodes extends QueueableJob
                 if ($parentName) {
                     $cleanParentName = ltrim($parentName, '-');
                     if (! empty($cleanParentName)) {
-                        $hierarchicalParts[] = strtoupper($cleanParentName);
+                        $hierarchicalParts[] = $this->capitalizeFirst($cleanParentName);
                     }
                 }
             }
@@ -355,5 +355,21 @@ class ImportTariffCodes extends QueueableJob
         $hierarchicalParts = array_reverse($hierarchicalParts);
 
         return implode(' > ', $hierarchicalParts);
+    }
+
+    /**
+     * Capitalize only the first character (multibyte-safe) and lowercase the rest.
+     */
+    private function capitalizeFirst(string $value): string
+    {
+        $trimmed = trim($value);
+        if ($trimmed === '') {
+            return $trimmed;
+        }
+
+        $firstChar = mb_substr($trimmed, 0, 1, 'UTF-8');
+        $rest = mb_substr($trimmed, 1, null, 'UTF-8');
+
+        return mb_strtoupper($firstChar, 'UTF-8').$rest;
     }
 }
