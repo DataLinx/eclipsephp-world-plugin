@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
+use Throwable;
 use Workbench\App\Models\User;
 
 class WorkbenchBootstrap
@@ -32,7 +33,7 @@ class WorkbenchBootstrap
                             'email_verified_at' => now(),
                         ],
                     );
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     Log::error('[Workbench] User creation failed', ['message' => $e->getMessage()]);
                     // In case of a race/unique constraint, fetch the existing one
                     $user = User::query()->where('email', 'test@example.com')->first();
@@ -105,7 +106,7 @@ class WorkbenchBootstrap
                 // Mark as bootstrapped (cache for 1 hour)
                 Cache::put($cacheKey, true, 3600);
             });
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('[Workbench] Bootstrap permissions failed', ['message' => $e->getMessage()]);
         }
     }

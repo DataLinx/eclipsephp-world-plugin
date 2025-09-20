@@ -3,6 +3,7 @@
 use Eclipse\World\Filament\Clusters\World\Resources\CurrencyResource;
 use Eclipse\World\Filament\Clusters\World\Resources\CurrencyResource\Pages\ListCurrencies;
 use Eclipse\World\Models\Currency;
+use Illuminate\Support\Arr;
 
 use function Pest\Livewire\livewire;
 
@@ -91,7 +92,7 @@ test('existing currency can be updated', function () {
         'is_active' => true,
     ]);
 
-    $data = \Illuminate\Support\Arr::except(Currency::factory()->definition(), ['id']);
+    $data = Arr::except(Currency::factory()->definition(), ['id']);
 
     livewire(ListCurrencies::class)
         ->callTableAction('edit', $currency, $data)

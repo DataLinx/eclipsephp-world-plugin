@@ -36,7 +36,7 @@ test('imports EN only (names and units)', function () {
     fakeCnResponses($year);
 
     // Verify the job runs without throwing exceptions
-    expect(fn () => (new ImportTariffCodes(['en']))->handle())->not->toThrow(\Exception::class);
+    expect(fn () => (new ImportTariffCodes(['en']))->handle())->not->toThrow(Exception::class);
 });
 
 test('imports EN + SL with unit resolution', function () {
@@ -44,7 +44,7 @@ test('imports EN + SL with unit resolution', function () {
     fakeCnResponses($year);
 
     // Verify the job runs without throwing exceptions
-    expect(fn () => (new ImportTariffCodes(['en', 'sl']))->handle())->not->toThrow(\Exception::class);
+    expect(fn () => (new ImportTariffCodes(['en', 'sl']))->handle())->not->toThrow(Exception::class);
 });
 
 test('imports other language without units', function () {
@@ -56,7 +56,7 @@ test('imports other language without units', function () {
     ]);
 
     // Verify the job runs without throwing exceptions
-    expect(fn () => (new ImportTariffCodes(['hr']))->handle())->not->toThrow(\Exception::class);
+    expect(fn () => (new ImportTariffCodes(['hr']))->handle())->not->toThrow(Exception::class);
 });
 
 test('missing year gracefully falls back to previous year', function () {
@@ -70,5 +70,5 @@ test('missing year gracefully falls back to previous year', function () {
     fakeCnResponses($year - 1); // Current year
 
     // Verify the job runs without throwing exceptions
-    expect(fn () => (new ImportTariffCodes(['en']))->handle())->not->toThrow(\Exception::class);
+    expect(fn () => (new ImportTariffCodes(['en']))->handle())->not->toThrow(Exception::class);
 });

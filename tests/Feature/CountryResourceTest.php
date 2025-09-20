@@ -4,6 +4,7 @@ use Eclipse\World\Filament\Clusters\World\Resources\CountryResource;
 use Eclipse\World\Filament\Clusters\World\Resources\CountryResource\Pages\ListCountries;
 use Eclipse\World\Models\Country;
 use Eclipse\World\Models\Region;
+use Illuminate\Support\Arr;
 
 use function Pest\Livewire\livewire;
 
@@ -95,7 +96,7 @@ test('existing country can be updated', function () {
         'flag' => '🇸🇮',
     ]);
 
-    $data = \Illuminate\Support\Arr::except(Country::factory()->definition(), ['id']);
+    $data = Arr::except(Country::factory()->definition(), ['id']);
 
     livewire(ListCountries::class)
         ->callTableAction('edit', $country, $data)

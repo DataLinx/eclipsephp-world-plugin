@@ -182,7 +182,7 @@ test('cannot create duplicate year-code combo', function () {
     try {
         livewire(ListTariffCodes::class)
             ->callAction('create', $duplicateData);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         // Expected to fail due to unique constraint
     }
 

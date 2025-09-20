@@ -2,7 +2,11 @@
 
 namespace Workbench\App\Providers;
 
+use BezhanSalleh\FilamentShield\FilamentShieldServiceProvider;
+use Filament\FilamentServiceProvider;
 use Illuminate\Support\ServiceProvider;
+use Livewire\LivewireServiceProvider;
+use Spatie\Permission\PermissionServiceProvider;
 
 class WorkbenchServiceProvider extends ServiceProvider
 {
@@ -11,10 +15,10 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->register(\Spatie\Permission\PermissionServiceProvider::class);
-        $this->app->register(\BezhanSalleh\FilamentShield\FilamentShieldServiceProvider::class);
-        $this->app->register(\Livewire\LivewireServiceProvider::class);
-        $this->app->register(\Filament\FilamentServiceProvider::class);
+        $this->app->register(PermissionServiceProvider::class);
+        $this->app->register(FilamentShieldServiceProvider::class);
+        $this->app->register(LivewireServiceProvider::class);
+        $this->app->register(FilamentServiceProvider::class);
         $this->app->register(AdminPanelProvider::class);
         $this->app->register(AuthServiceProvider::class);
     }

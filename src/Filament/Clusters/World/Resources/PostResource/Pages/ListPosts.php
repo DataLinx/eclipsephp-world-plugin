@@ -23,7 +23,7 @@ class ListPosts extends ListRecords
             Action::make('import_posts')
                 ->label(__('eclipse-world::posts.import.action_label'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->form([
+                ->schema([
                     Select::make('country_id')
                         ->label(__('eclipse-world::posts.import.country_label'))
                         ->helperText(__('eclipse-world::posts.import.country_helper'))
