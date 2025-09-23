@@ -61,7 +61,9 @@ return [
     'resources' => [
         'subject' => 'model',
         'manage' => [
-            RoleResource::class => ['viewAny', 'view', 'create', 'update', 'delete'],
+            RoleResource::class => [
+                'viewAny', 'view', 'create', 'update', 'delete',
+            ],
         ],
         'exclude' => [],
     ],
@@ -69,13 +71,18 @@ return [
     'pages' => [
         'subject' => 'class',
         'prefix' => 'view',
-        'exclude' => [Dashboard::class],
+        'exclude' => [
+            Dashboard::class,
+        ],
     ],
 
     'widgets' => [
         'subject' => 'class',
         'prefix' => 'view',
-        'exclude' => [AccountWidget::class, FilamentInfoWidget::class],
+        'exclude' => [
+            AccountWidget::class,
+            FilamentInfoWidget::class,
+        ],
     ],
 
     'custom_permissions' => [],
