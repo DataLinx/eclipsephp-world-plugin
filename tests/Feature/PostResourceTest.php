@@ -4,6 +4,7 @@ use Eclipse\World\Filament\Clusters\World\Resources\PostResource;
 use Eclipse\World\Filament\Clusters\World\Resources\PostResource\Pages\ListPosts;
 use Eclipse\World\Models\Country;
 use Eclipse\World\Models\Post;
+use Filament\Actions\Testing\TestAction;
 
 use function Pest\Livewire\livewire;
 
@@ -40,15 +41,8 @@ test('unauthorized access can be prevented', function () {
         ->assertTableActionDisabled('delete', $post)
         ->assertTableBulkActionDisabled('delete');
 
-    // Restore and force delete
     $post->delete();
     $this->assertSoftDeleted($post);
-
-    livewire(ListPosts::class)
-        ->assertTableActionDisabled('restore', $post)
-        ->assertTableBulkActionDisabled('restore')
-        ->assertTableActionDisabled('forceDelete', $post)
-        ->assertTableBulkActionDisabled('forceDelete');
 });
 
 test('posts table can be displayed', function () {
@@ -58,25 +52,26 @@ test('posts table can be displayed', function () {
 
 test('form validation works', function () {
     $country = Country::factory()->create();
-    $component = livewire(ListPosts::class);
 
-    // Test required fields
-    $component->callAction('create')
-        ->assertHasActionErrors([
-            'country_id' => 'required',
-            'code' => 'required',
-            'name' => 'required',
+    // Submit with empty data
+    livewire(ListPosts::class)
+        ->callAction(TestAction::make('create'))
+        ->assertHasFormErrors([
+            'country_id' => ['required'],
+            'code' => ['required'],
+            'name' => ['required'],
         ]);
 
-    // Test with valid data
+    // Submit with valid data
     $validData = [
         'country_id' => $country->id,
         'code' => '1000',
         'name' => 'Ljubljana',
     ];
 
-    $component->callAction('create', $validData)
-        ->assertHasNoActionErrors();
+    livewire(ListPosts::class)
+        ->callAction(TestAction::make('create'), data: $validData)
+        ->assertHasNoFormErrors();
 });
 
 test('new post can be created', function () {

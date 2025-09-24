@@ -40,8 +40,16 @@ abstract class TestCase extends BaseTestCase
      */
     protected function setUpSuperAdmin(): self
     {
-        $this->superAdmin = User::factory()->make();
-        $this->superAdmin->assignRole('super_admin')->save();
+        $this->superAdmin = User::factory()->create();
+
+        // Assign super admin role and give all permissions
+        $superAdminRole = \Spatie\Permission\Models\Role::where('name', 'super_admin')->first();
+        if ($superAdminRole) {
+            $this->superAdmin->assignRole($superAdminRole);
+            // Give all permissions to super admin role
+            $permissions = \Spatie\Permission\Models\Permission::all();
+            $superAdminRole->syncPermissions($permissions);
+        }
 
         $this->actingAs($this->superAdmin);
 
@@ -66,5 +74,61 @@ abstract class TestCase extends BaseTestCase
             // A list of packages that should not be auto-discovered when running tests
             'laravel/telescope',
         ];
+    }
+
+    /**
+     * Create permissions for all resources
+     */
+    protected function createPermissions(): self
+    {
+        $resources = [
+            'country',
+            'currency',
+            'post',
+            'region',
+            'tariff::code',
+        ];
+
+        $permissions = [
+            'view_any',
+            'view',
+            'create',
+            'update',
+            'restore',
+            'restore_any',
+            'delete',
+            'delete_any',
+            'force_delete',
+            'force_delete_any',
+        ];
+
+        foreach ($resources as $resource) {
+            foreach ($permissions as $permission) {
+                \Spatie\Permission\Models\Permission::create([
+                    'name' => $permission.'_'.$resource,
+                    'guard_name' => 'web',
+                ]);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Create roles
+     */
+    protected function createRoles(): self
+    {
+        \Spatie\Permission\Models\Role::create([
+            'name' => 'super_admin',
+            'guard_name' => 'web',
+        ]);
+
+        \Spatie\Permission\Models\Role::create([
+            'name' => 'panel_user',
+            'guard_name' => 'web',
+        ]);
+
+        return $this;
     }
 }

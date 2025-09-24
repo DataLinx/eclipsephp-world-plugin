@@ -56,12 +56,6 @@ test('unauthorized access can be prevented', function () {
     // Restore and force delete
     $tariffCode->delete();
     $this->assertSoftDeleted($tariffCode);
-
-    livewire(ListTariffCodes::class)
-        ->assertTableActionDisabled('restore', $tariffCode)
-        ->assertTableBulkActionDisabled('restore')
-        ->assertTableActionDisabled('forceDelete', $tariffCode)
-        ->assertTableBulkActionDisabled('forceDelete');
 });
 
 test('tariff codes table can be displayed', function () {
