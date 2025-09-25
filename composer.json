@@ -43,19 +43,13 @@
         "php": "^8.2",
         "bezhansalleh/filament-shield": "^4.0",
         "datalinx/php-utils": "^2.5",
-        "eclipsephp/common": "dev-f4@dev",
+        "eclipsephp/common": "dev-main",
         "filament/filament": "^4.0",
         "lara-zeus/spatie-translatable": "^1.0",
         "laravel/framework": "^11.0|^12.0",
         "spatie/laravel-package-tools": "^1.19",
         "spatie/laravel-translatable": "^6.11"
     },
-    "repositories": [
-        {
-          "type": "vcs",
-          "url": "https://github.com/KilianTrunk/eclipsephp-common.git"
-        }
-      ],
     "require-dev": {
         "laravel/pint": "^1.21",
         "orchestra/testbench": "^9.9|^10.0",
