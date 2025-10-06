@@ -86,7 +86,7 @@ abstract class TestCase extends BaseTestCase
             'currency',
             'post',
             'region',
-            'tariff::code',
+            'tariff_code',
         ];
 
         $permissions = [

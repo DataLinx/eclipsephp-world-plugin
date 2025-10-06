@@ -37,7 +37,7 @@ test('unauthorized access can be prevented', function () {
         ->assertForbidden();
 
     // Add direct permission to view the table, since otherwise any other action below is not available even for testing
-    $this->user->givePermissionTo('view_any_tariff::code');
+    $this->user->givePermissionTo('view_any_tariff_code');
 
     // Create tariff code
     livewire(ListTariffCodes::class)

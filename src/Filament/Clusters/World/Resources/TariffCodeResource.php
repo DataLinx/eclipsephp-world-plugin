@@ -2,7 +2,6 @@
 
 namespace Eclipse\World\Filament\Clusters\World\Resources;
 
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Eclipse\World\Filament\Clusters\World;
 use Eclipse\World\Filament\Clusters\World\Resources\TariffCodeResource\Pages\ListTariffCodes;
 use Eclipse\World\Models\TariffCode;
@@ -25,7 +24,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
-class TariffCodeResource extends Resource implements HasShieldPermissions
+class TariffCodeResource extends Resource
 {
     use Translatable;
 
@@ -130,20 +129,5 @@ class TariffCodeResource extends Resource implements HasShieldPermissions
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }
-
-    public static function getPermissionPrefixes(): array
-    {
-        return [
-            'view_any',
-            'create',
-            'update',
-            'restore',
-            'restore_any',
-            'delete',
-            'delete_any',
-            'force_delete',
-            'force_delete_any',
-        ];
     }
 }

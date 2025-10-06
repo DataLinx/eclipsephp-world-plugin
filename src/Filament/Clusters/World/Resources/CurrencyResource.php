@@ -2,7 +2,6 @@
 
 namespace Eclipse\World\Filament\Clusters\World\Resources;
 
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Eclipse\World\Filament\Clusters\World;
 use Eclipse\World\Filament\Clusters\World\Resources\CurrencyResource\Pages\ListCurrencies;
 use Eclipse\World\Models\Currency;
@@ -26,7 +25,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class CurrencyResource extends Resource implements HasShieldPermissions
+class CurrencyResource extends Resource
 {
     protected static ?string $model = Currency::class;
 
@@ -127,21 +126,6 @@ class CurrencyResource extends Resource implements HasShieldPermissions
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }
-
-    public static function getPermissionPrefixes(): array
-    {
-        return [
-            'view_any',
-            'create',
-            'update',
-            'restore',
-            'restore_any',
-            'delete',
-            'delete_any',
-            'force_delete',
-            'force_delete_any',
-        ];
     }
 
     public static function getNavigationLabel(): string

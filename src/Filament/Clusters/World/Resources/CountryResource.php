@@ -2,7 +2,6 @@
 
 namespace Eclipse\World\Filament\Clusters\World\Resources;
 
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Closure;
 use Eclipse\World\Filament\Clusters\World;
 use Eclipse\World\Filament\Clusters\World\Resources\CountryResource\Pages\ListCountries;
@@ -32,7 +31,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use TangoDevIt\FilamentEmojiPicker\EmojiPickerAction;
 
-class CountryResource extends Resource implements HasShieldPermissions
+class CountryResource extends Resource
 {
     protected static ?string $model = Country::class;
 
@@ -265,21 +264,6 @@ class CountryResource extends Resource implements HasShieldPermissions
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }
-
-    public static function getPermissionPrefixes(): array
-    {
-        return [
-            'view_any',
-            'create',
-            'update',
-            'restore',
-            'restore_any',
-            'delete',
-            'delete_any',
-            'force_delete',
-            'force_delete_any',
-        ];
     }
 
     public static function getNavigationLabel(): string

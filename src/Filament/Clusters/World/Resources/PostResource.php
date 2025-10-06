@@ -2,7 +2,6 @@
 
 namespace Eclipse\World\Filament\Clusters\World\Resources;
 
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Eclipse\World\Filament\Clusters\World;
 use Eclipse\World\Filament\Clusters\World\Resources\PostResource\Pages\ListPosts;
 use Eclipse\World\Models\Post;
@@ -28,7 +27,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Validation\Rule;
 
-class PostResource extends Resource implements HasShieldPermissions
+class PostResource extends Resource
 {
     protected static ?string $model = Post::class;
 
@@ -141,21 +140,6 @@ class PostResource extends Resource implements HasShieldPermissions
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }
-
-    public static function getPermissionPrefixes(): array
-    {
-        return [
-            'view_any',
-            'create',
-            'update',
-            'restore',
-            'restore_any',
-            'delete',
-            'delete_any',
-            'force_delete',
-            'force_delete_any',
-        ];
     }
 
     public static function getNavigationLabel(): string
