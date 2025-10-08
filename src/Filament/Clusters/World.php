@@ -6,7 +6,7 @@ use Filament\Clusters\Cluster;
 
 class World extends Cluster
 {
-    protected static ?string $navigationIcon = 'heroicon-s-map';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-s-map';
 
     public static function getNavigationLabel(): string
     {

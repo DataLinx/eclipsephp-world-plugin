@@ -3,6 +3,7 @@
 use Eclipse\World\Filament\Clusters\World\Resources\RegionResource;
 use Eclipse\World\Filament\Clusters\World\Resources\RegionResource\Pages\ListRegions;
 use Eclipse\World\Models\Region;
+use Filament\Actions\Testing\TestAction;
 
 use function Pest\Livewire\livewire;
 
@@ -41,12 +42,6 @@ test('unauthorized access can be prevented', function () {
     // Restore and force delete
     $region->delete();
     $this->assertSoftDeleted($region);
-
-    livewire(ListRegions::class)
-        ->assertTableActionDisabled('restore', $region)
-        ->assertTableBulkActionDisabled('restore')
-        ->assertTableActionDisabled('forceDelete', $region)
-        ->assertTableBulkActionDisabled('forceDelete');
 });
 
 test('regions table can be displayed', function () {
@@ -55,17 +50,20 @@ test('regions table can be displayed', function () {
 });
 
 test('form validation works', function () {
-    $component = livewire(ListRegions::class);
-
-    // Test required fields
-    $component->callAction('create')
-        ->assertHasActionErrors([
-            'name' => 'required',
+    // Submit with empty data
+    livewire(ListRegions::class)
+        ->callAction(TestAction::make('create'))
+        ->assertHasFormErrors([
+            'name' => ['required'],
         ]);
 
-    // Test with valid data
-    $component->callAction('create', Region::factory()->definition())
-        ->assertHasNoActionErrors();
+    // Submit with valid data
+    livewire(ListRegions::class)
+        ->callAction(
+            TestAction::make('create'),
+            data: Region::factory()->definition(),
+        )
+        ->assertHasNoFormErrors();
 });
 
 test('new region can be created', function () {

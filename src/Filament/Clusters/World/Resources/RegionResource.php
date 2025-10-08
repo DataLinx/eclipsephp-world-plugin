@@ -2,24 +2,23 @@
 
 namespace Eclipse\World\Filament\Clusters\World\Resources;
 
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Eclipse\World\Filament\Clusters\World;
-use Eclipse\World\Filament\Clusters\World\Resources\RegionResource\Pages;
+use Eclipse\World\Filament\Clusters\World\Resources\RegionResource\Pages\ListRegions;
 use Eclipse\World\Models\Region;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
-use Filament\Tables\Actions\ActionGroup;
-use Filament\Tables\Actions\BulkActionGroup;
-use Filament\Tables\Actions\DeleteAction;
-use Filament\Tables\Actions\DeleteBulkAction;
-use Filament\Tables\Actions\EditAction;
-use Filament\Tables\Actions\ForceDeleteAction;
-use Filament\Tables\Actions\ForceDeleteBulkAction;
-use Filament\Tables\Actions\RestoreAction;
-use Filament\Tables\Actions\RestoreBulkAction;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -28,20 +27,20 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class RegionResource extends Resource implements HasShieldPermissions
+class RegionResource extends Resource
 {
     protected static ?string $model = Region::class;
 
     protected static ?string $slug = 'regions';
 
-    protected static ?string $navigationIcon = 'heroicon-o-globe-europe-africa';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-globe-europe-africa';
 
     protected static ?string $cluster = World::class;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('name')
                     ->label(__('eclipse-world::regions.form.name.label'))
                     ->required()
@@ -136,7 +135,7 @@ class RegionResource extends Resource implements HasShieldPermissions
                     ->preload(),
                 TrashedFilter::make(),
             ])
-            ->actions([
+            ->recordActions([
                 EditAction::make()
                     ->label(__('eclipse-world::regions.actions.edit.label'))
                     ->modalHeading(__('eclipse-world::regions.actions.edit.heading')),
@@ -155,7 +154,7 @@ class RegionResource extends Resource implements HasShieldPermissions
                         ])),
                 ]),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
                         ->label(__('eclipse-world::regions.actions.delete.label')),
@@ -170,7 +169,7 @@ class RegionResource extends Resource implements HasShieldPermissions
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRegions::route('/'),
+            'index' => ListRegions::route('/'),
         ];
     }
 
@@ -180,21 +179,6 @@ class RegionResource extends Resource implements HasShieldPermissions
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
-    }
-
-    public static function getPermissionPrefixes(): array
-    {
-        return [
-            'view_any',
-            'create',
-            'update',
-            'restore',
-            'restore_any',
-            'delete',
-            'delete_any',
-            'force_delete',
-            'force_delete_any',
-        ];
     }
 
     public static function getNavigationLabel(): string

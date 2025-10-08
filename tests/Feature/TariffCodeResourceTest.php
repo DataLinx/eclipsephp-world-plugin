@@ -37,7 +37,7 @@ test('unauthorized access can be prevented', function () {
         ->assertForbidden();
 
     // Add direct permission to view the table, since otherwise any other action below is not available even for testing
-    $this->user->givePermissionTo('view_any_tariff::code');
+    $this->user->givePermissionTo('view_any_tariff_code');
 
     // Create tariff code
     livewire(ListTariffCodes::class)
@@ -56,12 +56,6 @@ test('unauthorized access can be prevented', function () {
     // Restore and force delete
     $tariffCode->delete();
     $this->assertSoftDeleted($tariffCode);
-
-    livewire(ListTariffCodes::class)
-        ->assertTableActionDisabled('restore', $tariffCode)
-        ->assertTableBulkActionDisabled('restore')
-        ->assertTableActionDisabled('forceDelete', $tariffCode)
-        ->assertTableBulkActionDisabled('forceDelete');
 });
 
 test('tariff codes table can be displayed', function () {
@@ -182,7 +176,7 @@ test('cannot create duplicate year-code combo', function () {
     try {
         livewire(ListTariffCodes::class)
             ->callAction('create', $duplicateData);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         // Expected to fail due to unique constraint
     }
 

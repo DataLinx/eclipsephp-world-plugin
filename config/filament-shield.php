@@ -1,10 +1,5 @@
 <?php
 
-use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
-use Filament\Pages\Dashboard;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
-
 return [
     'shield_resource' => [
         'slug' => 'shield/roles',
@@ -14,13 +9,13 @@ return [
             'pages' => true,
             'widgets' => true,
             'resources' => true,
-            'custom_permissions' => false,
+            'custom_permissions' => true,
         ],
     ],
 
-    'tenant_model' => null,
+    'tenant_model' => \Eclipse\Core\Models\Site::class,
 
-    'auth_provider_model' => Workbench\App\Models\User::class,
+    'auth_provider_model' => \Eclipse\Core\Models\User::class,
 
     'super_admin' => [
         'enabled' => true,
@@ -42,7 +37,7 @@ return [
 
     'policies' => [
         'path' => app_path('Policies'),
-        'merge' => true,
+        'merge' => false,
         'generate' => true,
         'methods' => [
             'viewAny', 'view', 'create', 'update', 'restore', 'restoreAny',
@@ -60,11 +55,7 @@ return [
 
     'resources' => [
         'subject' => 'model',
-        'manage' => [
-            RoleResource::class => [
-                'viewAny', 'view', 'create', 'update', 'delete',
-            ],
-        ],
+        'manage' => [],
         'exclude' => [],
     ],
 
@@ -72,7 +63,6 @@ return [
         'subject' => 'class',
         'prefix' => 'view',
         'exclude' => [
-            Dashboard::class,
         ],
     ],
 
@@ -80,12 +70,11 @@ return [
         'subject' => 'class',
         'prefix' => 'view',
         'exclude' => [
-            AccountWidget::class,
-            FilamentInfoWidget::class,
         ],
     ],
 
-    'custom_permissions' => [],
+    'custom_permissions' => [
+    ],
 
     'discovery' => [
         'discover_all_resources' => false,

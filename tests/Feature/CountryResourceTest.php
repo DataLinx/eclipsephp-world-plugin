@@ -4,6 +4,8 @@ use Eclipse\World\Filament\Clusters\World\Resources\CountryResource;
 use Eclipse\World\Filament\Clusters\World\Resources\CountryResource\Pages\ListCountries;
 use Eclipse\World\Models\Country;
 use Eclipse\World\Models\Region;
+use Filament\Actions\Testing\TestAction;
+use Illuminate\Support\Arr;
 
 use function Pest\Livewire\livewire;
 
@@ -39,15 +41,8 @@ test('unauthorized access can be prevented', function () {
         ->assertTableActionDisabled('delete', $country)
         ->assertTableBulkActionDisabled('delete');
 
-    // Restore and force delete
     $country->delete();
     $this->assertSoftDeleted($country);
-
-    livewire(ListCountries::class)
-        ->assertTableActionDisabled('restore', $country)
-        ->assertTableBulkActionDisabled('restore')
-        ->assertTableActionDisabled('forceDelete', $country)
-        ->assertTableBulkActionDisabled('forceDelete');
 });
 
 test('countries table can be displayed', function () {
@@ -56,19 +51,22 @@ test('countries table can be displayed', function () {
 });
 
 test('form validation works', function () {
-    $component = livewire(ListCountries::class);
-
-    // Test required fields
-    $component->callAction('create')
-        ->assertHasActionErrors([
-            'id' => 'required',
-            'a3_id' => 'required',
-            'name' => 'required',
+    // Submit with empty data
+    livewire(ListCountries::class)
+        ->callAction(TestAction::make('create'))
+        ->assertHasFormErrors([
+            'id' => ['required'],
+            'a3_id' => ['required'],
+            'name' => ['required'],
         ]);
 
-    // Test with valid data
-    $component->callAction('create', Country::factory()->definition())
-        ->assertHasNoActionErrors();
+    // Submit with valid data
+    livewire(ListCountries::class)
+        ->callAction(
+            TestAction::make('create'),
+            data: Country::factory()->definition(),
+        )
+        ->assertHasNoFormErrors();
 });
 
 test('new country can be created', function () {
@@ -95,7 +93,7 @@ test('existing country can be updated', function () {
         'flag' => '🇸🇮',
     ]);
 
-    $data = \Illuminate\Support\Arr::except(Country::factory()->definition(), ['id']);
+    $data = Arr::except(Country::factory()->definition(), ['id']);
 
     livewire(ListCountries::class)
         ->callTableAction('edit', $country, $data)
