@@ -1,11 +1,5 @@
 <?php
 
-use Eclipse\World\Filament\Clusters\World\Resources\CountryResource;
-use Eclipse\World\Filament\Clusters\World\Resources\CurrencyResource;
-use Eclipse\World\Filament\Clusters\World\Resources\PostResource;
-use Eclipse\World\Filament\Clusters\World\Resources\RegionResource;
-use Eclipse\World\Filament\Clusters\World\Resources\TariffCodeResource;
-
 return [
     'shield_resource' => [
         'slug' => 'shield/roles',
@@ -43,7 +37,7 @@ return [
 
     'policies' => [
         'path' => app_path('Policies'),
-        'merge' => true,
+        'merge' => false,
         'generate' => true,
         'methods' => [
             'viewAny', 'view', 'create', 'update', 'restore', 'restoreAny',
@@ -61,68 +55,7 @@ return [
 
     'resources' => [
         'subject' => 'model',
-        'manage' => [
-            CountryResource::class => [
-                'viewAny',
-                'view',
-                'create',
-                'update',
-                'restore',
-                'restoreAny',
-                'delete',
-                'deleteAny',
-                'forceDelete',
-                'forceDeleteAny',
-            ],
-            RegionResource::class => [
-                'viewAny',
-                'view',
-                'create',
-                'update',
-                'restore',
-                'restoreAny',
-                'delete',
-                'deleteAny',
-                'forceDelete',
-                'forceDeleteAny',
-            ],
-            CurrencyResource::class => [
-                'viewAny',
-                'view',
-                'create',
-                'update',
-                'restore',
-                'restoreAny',
-                'delete',
-                'deleteAny',
-                'forceDelete',
-                'forceDeleteAny',
-            ],
-            TariffCodeResource::class => [
-                'viewAny',
-                'view',
-                'create',
-                'update',
-                'restore',
-                'restoreAny',
-                'delete',
-                'deleteAny',
-                'forceDelete',
-                'forceDeleteAny',
-            ],
-            PostResource::class => [
-                'viewAny',
-                'view',
-                'create',
-                'update',
-                'restore',
-                'restoreAny',
-                'delete',
-                'deleteAny',
-                'forceDelete',
-                'forceDeleteAny',
-            ],
-        ],
+        'manage' => [],
         'exclude' => [],
     ],
 
