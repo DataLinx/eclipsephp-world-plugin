@@ -7,10 +7,10 @@ use Eclipse\World\Filament\Clusters\World\Resources\TariffCodeResource;
 use Eclipse\World\Jobs\ImportTariffCodes;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
-use Filament\Actions\LocaleSwitcher;
 use Filament\Forms\Components\Select;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Resources\Pages\ListRecords\Concerns\Translatable;
+use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
+use LaraZeus\SpatieTranslatable\Resources\Pages\ListRecords\Concerns\Translatable;
 
 class ListTariffCodes extends ListRecords
 {
@@ -28,7 +28,7 @@ class ListTariffCodes extends ListRecords
             Action::make('import_tariff_codes')
                 ->label(__('eclipse-world::tariff-codes.import.action_label'))
                 ->icon('heroicon-o-arrow-down-tray')
-                ->form([
+                ->schema([
                     Select::make('locales')
                         ->label(__('eclipse-world::tariff-codes.import.locales_label'))
                         ->options(Locale::getAvailableLocales()->pluck('id', 'id')->toArray())

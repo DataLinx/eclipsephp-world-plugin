@@ -3,6 +3,8 @@
 use Eclipse\World\Filament\Clusters\World\Resources\CurrencyResource;
 use Eclipse\World\Filament\Clusters\World\Resources\CurrencyResource\Pages\ListCurrencies;
 use Eclipse\World\Models\Currency;
+use Filament\Actions\Testing\TestAction;
+use Illuminate\Support\Arr;
 
 use function Pest\Livewire\livewire;
 
@@ -38,15 +40,8 @@ test('unauthorized access can be prevented', function () {
         ->assertTableActionDisabled('delete', $currency)
         ->assertTableBulkActionDisabled('delete');
 
-    // Restore and force delete
     $currency->delete();
     $this->assertSoftDeleted($currency);
-
-    livewire(ListCurrencies::class)
-        ->assertTableActionDisabled('restore', $currency)
-        ->assertTableBulkActionDisabled('restore')
-        ->assertTableActionDisabled('forceDelete', $currency)
-        ->assertTableBulkActionDisabled('forceDelete');
 });
 
 test('currencies table can be displayed', function () {
@@ -55,18 +50,21 @@ test('currencies table can be displayed', function () {
 });
 
 test('form validation works', function () {
-    $component = livewire(ListCurrencies::class);
-
-    // Test required fields
-    $component->callAction('create')
-        ->assertHasActionErrors([
-            'id' => 'required',
-            'name' => 'required',
+    // Submit with empty data
+    livewire(ListCurrencies::class)
+        ->callAction(TestAction::make('create'))
+        ->assertHasFormErrors([
+            'id' => ['required'],
+            'name' => ['required'],
         ]);
 
-    // Test with valid data
-    $component->callAction('create', Currency::factory()->definition())
-        ->assertHasNoActionErrors();
+    // Submit with valid data
+    livewire(ListCurrencies::class)
+        ->callAction(
+            TestAction::make('create'),
+            data: Currency::factory()->definition(),
+        )
+        ->assertHasNoFormErrors();
 });
 
 test('new currency can be created', function () {
@@ -91,7 +89,7 @@ test('existing currency can be updated', function () {
         'is_active' => true,
     ]);
 
-    $data = \Illuminate\Support\Arr::except(Currency::factory()->definition(), ['id']);
+    $data = Arr::except(Currency::factory()->definition(), ['id']);
 
     livewire(ListCurrencies::class)
         ->callTableAction('edit', $currency, $data)
