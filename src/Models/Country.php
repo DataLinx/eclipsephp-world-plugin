@@ -90,4 +90,17 @@ class Country extends Model
     {
         return CountryFactory::new();
     }
+
+    /**
+     * Ensure numeric code is always stored as a 3-character, zero-padded string.
+     */
+    public function setNumCodeAttribute($value): void
+    {
+        if ($value === null || $value === '') {
+            $this->attributes['num_code'] = null;
+            return;
+        }
+
+        $this->attributes['num_code'] = str_pad((string) $value, 3, '0', STR_PAD_LEFT);
+    }
 }
