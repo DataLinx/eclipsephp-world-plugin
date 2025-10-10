@@ -98,6 +98,7 @@ class Country extends Model
     {
         if ($value === null || $value === '') {
             $this->attributes['num_code'] = null;
+
             return;
         }
 
