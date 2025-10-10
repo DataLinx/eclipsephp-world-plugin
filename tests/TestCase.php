@@ -77,7 +77,7 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Create permissions for all resources.
+     * Create permissions for all resources
      */
     protected function createPermissions(): self
     {
