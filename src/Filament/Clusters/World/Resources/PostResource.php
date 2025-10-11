@@ -139,7 +139,8 @@ class PostResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ]);
+            ])
+            ->with('country');
     }
 
     public static function getNavigationLabel(): string

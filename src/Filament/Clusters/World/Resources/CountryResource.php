@@ -185,7 +185,7 @@ class CountryResource extends Resource
 
                 TextColumn::make('special_regions')
                     ->label(__('eclipse-world::countries.table.special_regions.label'))
-                    ->getStateUsing(fn ($record) => $record->getSpecialRegionsAt()->pluck('name')->join(', '))
+                    ->getStateUsing(fn ($record) => $record->specialRegions->pluck('name')->join(', '))
                     ->placeholder('—')
                     ->wrap(),
             ])
@@ -263,6 +263,16 @@ class CountryResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
+            ])
+            ->with([
+                'region',
+                'specialRegions' => function ($query) {
+                    $query->wherePivot('start_date', '<=', now())
+                        ->where(function ($query) {
+                            $query->whereNull('world_country_in_special_region.end_date')
+                                ->orWhere('world_country_in_special_region.end_date', '>=', now());
+                        });
+                },
             ]);
     }
 

@@ -97,23 +97,10 @@ class RegionResource extends Resource
                 TextColumn::make('countries_count')
                     ->label(__('eclipse-world::regions.table.countries_count.label'))
                     ->getStateUsing(function (Region $record): int {
-                        if ($record->is_special) {
-                            return $record->getCountriesInSpecialRegion()->count();
-                        }
-
-                        return $record->countries()->count();
+                        return $record->is_special ? $record->special_countries_count : $record->countries_count;
                     })
                     ->sortable(query: function (Builder $query, string $direction): Builder {
-                        return $query->withCount([
-                            'countries',
-                            'specialCountries' => function ($query) {
-                                $query->where('world_country_in_special_region.start_date', '<=', now())
-                                    ->where(function ($query) {
-                                        $query->whereNull('world_country_in_special_region.end_date')
-                                            ->orWhere('world_country_in_special_region.end_date', '>=', now());
-                                    });
-                            },
-                        ])->orderBy('countries_count', $direction);
+                        return $query->orderBy('countries_count', $direction);
                     }),
 
                 TextColumn::make('children_count')
@@ -178,6 +165,17 @@ class RegionResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
+            ])
+            ->with('parent')
+            ->withCount([
+                'countries',
+                'specialCountries' => function ($query) {
+                    $query->where('world_country_in_special_region.start_date', '<=', now())
+                        ->where(function ($query) {
+                            $query->whereNull('world_country_in_special_region.end_date')
+                                ->orWhere('world_country_in_special_region.end_date', '>=', now());
+                        });
+                },
             ]);
     }
 
