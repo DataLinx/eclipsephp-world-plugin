@@ -65,7 +65,6 @@ class TariffCodeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultPaginationPageOption(50)
             ->defaultSort('code')
             ->striped()
             ->columns([

@@ -146,7 +146,6 @@ class CountryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultPaginationPageOption(50)
             ->defaultSort('name')
             ->striped()
             ->columns([
