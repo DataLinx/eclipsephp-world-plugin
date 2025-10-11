@@ -17,6 +17,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Laravel\Telescope\Telescope;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 use Workbench\App\Http\Middleware\WorkbenchBootstrap;
 
@@ -53,11 +54,23 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme(false)
             ->pages([
                 Dashboard::class,
+            ])
+            ->navigationItems([
+                \Filament\Navigation\NavigationItem::make('Telescope')
+                    ->url('/telescope')
+                    ->icon('heroicon-o-magnifying-glass')
+                    ->group('Development')
+                    ->sort(1)
+                    ->visible(fn (): bool => $this->app->environment('local', 'testing')),
             ]);
     }
 
     public function register(): void
     {
         parent::register();
+
+        if ($this->app->environment('local', 'testing')) {
+            Telescope::night();
+        }
     }
 }

@@ -5,6 +5,7 @@ namespace Workbench\App\Providers;
 use BezhanSalleh\FilamentShield\FilamentShieldServiceProvider;
 use Filament\FilamentServiceProvider;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Telescope\TelescopeServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Spatie\Permission\PermissionServiceProvider;
 
@@ -19,6 +20,7 @@ class WorkbenchServiceProvider extends ServiceProvider
         $this->app->register(FilamentShieldServiceProvider::class);
         $this->app->register(LivewireServiceProvider::class);
         $this->app->register(FilamentServiceProvider::class);
+        $this->app->register(TelescopeServiceProvider::class);
         $this->app->register(AdminPanelProvider::class);
         $this->app->register(AuthServiceProvider::class);
     }
