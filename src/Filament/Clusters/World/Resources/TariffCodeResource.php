@@ -2,6 +2,7 @@
 
 namespace Eclipse\World\Filament\Clusters\World\Resources;
 
+use Eclipse\Common\Filament\Concerns\HasCachedAbilityChecks;
 use Eclipse\World\Filament\Clusters\World;
 use Eclipse\World\Filament\Clusters\World\Resources\TariffCodeResource\Pages\ListTariffCodes;
 use Eclipse\World\Models\TariffCode;
@@ -21,11 +22,13 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable;
 
 class TariffCodeResource extends Resource
 {
+    use HasCachedAbilityChecks;
     use Translatable;
 
     protected static ?string $model = TariffCode::class;
@@ -35,6 +38,51 @@ class TariffCodeResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?string $cluster = World::class;
+
+    public static function canUpdateAny(): bool
+    {
+        return static::canOnce('update_tariff_code');
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return static::canOnce('delete_tariff_code');
+    }
+
+    public static function canRestoreAny(): bool
+    {
+        return static::canOnce('restore_tariff_code');
+    }
+
+    public static function canForceDeleteAny(): bool
+    {
+        return static::canOnce('force_delete_tariff_code');
+    }
+
+    public static function canBulkDelete(): bool
+    {
+        return static::canOnce('delete_any_tariff_code');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::canUpdateAny();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canDeleteAny() && ! $record->trashed();
+    }
+
+    public static function canRestore(Model $record): bool
+    {
+        return static::canRestoreAny() && $record->trashed();
+    }
+
+    public static function canForceDelete(Model $record): bool
+    {
+        return static::canForceDeleteAny() && $record->trashed();
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -99,18 +147,33 @@ class TariffCodeResource extends Resource
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->authorize(fn () => self::canUpdateAny()),
+
                 ActionGroup::make([
-                    DeleteAction::make(),
-                    RestoreAction::make(),
-                    ForceDeleteAction::make(),
+                    DeleteAction::make()
+                        ->visible(fn (TariffCode $record) => ! $record->trashed())
+                        ->authorize(fn () => self::canDeleteAny()),
+
+                    RestoreAction::make()
+                        ->visible(fn (TariffCode $record) => $record->trashed())
+                        ->authorize(fn () => self::canRestoreAny()),
+
+                    ForceDeleteAction::make()
+                        ->visible(fn (TariffCode $record) => $record->trashed())
+                        ->authorize(fn () => self::canForceDeleteAny()),
                 ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->authorize(fn () => self::canBulkDelete()),
+
+                    RestoreBulkAction::make()
+                        ->authorize(fn () => self::canRestoreAny()),
+
+                    ForceDeleteBulkAction::make()
+                        ->authorize(fn () => self::canForceDeleteAny()),
                 ]),
             ]);
     }

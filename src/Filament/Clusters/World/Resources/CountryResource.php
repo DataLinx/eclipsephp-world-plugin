@@ -3,6 +3,7 @@
 namespace Eclipse\World\Filament\Clusters\World\Resources;
 
 use Closure;
+use Eclipse\Common\Filament\Concerns\HasCachedAbilityChecks;
 use Eclipse\World\Filament\Clusters\World;
 use Eclipse\World\Filament\Clusters\World\Resources\CountryResource\Pages\ListCountries;
 use Eclipse\World\Models\Country;
@@ -28,11 +29,14 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use TangoDevIt\FilamentEmojiPicker\EmojiPickerAction;
 
 class CountryResource extends Resource
 {
+    use HasCachedAbilityChecks;
+
     protected static ?string $model = Country::class;
 
     protected static ?string $slug = 'countries';
@@ -40,6 +44,51 @@ class CountryResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $cluster = World::class;
+
+    public static function canUpdateAny(): bool
+    {
+        return static::canOnce('update_country');
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return static::canOnce('delete_country');
+    }
+
+    public static function canRestoreAny(): bool
+    {
+        return static::canOnce('restore_country');
+    }
+
+    public static function canForceDeleteAny(): bool
+    {
+        return static::canOnce('force_delete_country');
+    }
+
+    public static function canBulkDelete(): bool
+    {
+        return static::canOnce('delete_any_country');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::canUpdateAny();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canDeleteAny() && ! $record->trashed();
+    }
+
+    public static function canRestore(Model $record): bool
+    {
+        return static::canRestoreAny() && $record->trashed();
+    }
+
+    public static function canForceDelete(Model $record): bool
+    {
+        return static::canForceDeleteAny() && $record->trashed();
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -222,30 +271,45 @@ class CountryResource extends Resource
             ->recordActions([
                 EditAction::make()
                     ->label(__('eclipse-world::countries.actions.edit.label'))
-                    ->modalHeading(__('eclipse-world::countries.actions.edit.heading')),
+                    ->modalHeading(__('eclipse-world::countries.actions.edit.heading'))
+                    ->authorize(fn () => self::canUpdateAny()),
+
                 ActionGroup::make([
                     DeleteAction::make()
                         ->label(__('eclipse-world::countries.actions.delete.label'))
-                        ->modalHeading(__('eclipse-world::countries.actions.delete.heading')),
+                        ->modalHeading(__('eclipse-world::countries.actions.delete.heading'))
+                        ->visible(fn (Country $record) => ! $record->trashed())
+                        ->authorize(fn () => self::canDeleteAny()),
+
                     RestoreAction::make()
                         ->label(__('eclipse-world::countries.actions.restore.label'))
-                        ->modalHeading(__('eclipse-world::countries.actions.restore.heading')),
+                        ->modalHeading(__('eclipse-world::countries.actions.restore.heading'))
+                        ->visible(fn (Country $record) => $record->trashed())
+                        ->authorize(fn () => self::canRestoreAny()),
+
                     ForceDeleteAction::make()
                         ->label(__('eclipse-world::countries.actions.force_delete.label'))
                         ->modalHeading(__('eclipse-world::countries.actions.force_delete.heading'))
                         ->modalDescription(fn (Country $record): string => __('eclipse-world::countries.actions.force_delete.description', [
                             'name' => $record->name,
-                        ])),
+                        ]))
+                        ->visible(fn (Country $record) => $record->trashed())
+                        ->authorize(fn () => self::canForceDeleteAny()),
                 ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->label(__('eclipse-world::countries.actions.delete.label')),
+                        ->label(__('eclipse-world::countries.actions.delete.label'))
+                        ->authorize(fn () => self::canBulkDelete()),
+
                     RestoreBulkAction::make()
-                        ->label(__('eclipse-world::countries.actions.restore.label')),
+                        ->label(__('eclipse-world::countries.actions.restore.label'))
+                        ->authorize(fn () => self::canRestoreAny()),
+
                     ForceDeleteBulkAction::make()
-                        ->label(__('eclipse-world::countries.actions.force_delete.label')),
+                        ->label(__('eclipse-world::countries.actions.force_delete.label'))
+                        ->authorize(fn () => self::canForceDeleteAny()),
                 ]),
             ]);
     }
