@@ -74,7 +74,7 @@ class CountryResource extends Resource
 
                 TextInput::make('num_code')
                     ->numeric()
-                    ->length(3)
+                    ->maxLength(3)
                     ->label(__('eclipse-world::countries.form.num_code.label'))
                     ->helperText(__('eclipse-world::countries.form.num_code.helper')),
 
