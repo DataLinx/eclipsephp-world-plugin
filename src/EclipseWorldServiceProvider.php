@@ -5,11 +5,11 @@ namespace Eclipse\World;
 use Eclipse\World\Console\Commands\ImportCommand;
 use Eclipse\World\Console\Commands\ImportPostsCommand;
 use Eclipse\World\Console\Commands\ImportTariffCodesCommand;
-use Eclipse\World\Filament\Resources\CountryResource;
-use Eclipse\World\Filament\Resources\CurrencyResource;
-use Eclipse\World\Filament\Resources\PostResource;
-use Eclipse\World\Filament\Resources\RegionResource;
-use Eclipse\World\Filament\Resources\TariffCodeResource;
+use Eclipse\World\Filament\Clusters\World\Resources\CountryResource;
+use Eclipse\World\Filament\Clusters\World\Resources\CurrencyResource;
+use Eclipse\World\Filament\Clusters\World\Resources\PostResource;
+use Eclipse\World\Filament\Clusters\World\Resources\RegionResource;
+use Eclipse\World\Filament\Clusters\World\Resources\TariffCodeResource;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -39,68 +39,26 @@ class EclipseWorldServiceProvider extends PackageServiceProvider
         $this->app->booted(function () {
             $manage = config('filament-shield.resources.manage', []);
 
-            $pluginManage = [
-                CountryResource::class => [
-                    'viewAny',
-                    'view',
-                    'create',
-                    'update',
-                    'restore',
-                    'restoreAny',
-                    'delete',
-                    'deleteAny',
-                    'forceDelete',
-                    'forceDeleteAny',
-                ],
-                RegionResource::class => [
-                    'viewAny',
-                    'view',
-                    'create',
-                    'update',
-                    'restore',
-                    'restoreAny',
-                    'delete',
-                    'deleteAny',
-                    'forceDelete',
-                    'forceDeleteAny',
-                ],
-                CurrencyResource::class => [
-                    'viewAny',
-                    'view',
-                    'create',
-                    'update',
-                    'restore',
-                    'restoreAny',
-                    'delete',
-                    'deleteAny',
-                    'forceDelete',
-                    'forceDeleteAny',
-                ],
-                TariffCodeResource::class => [
-                    'viewAny',
-                    'view',
-                    'create',
-                    'update',
-                    'restore',
-                    'restoreAny',
-                    'delete',
-                    'deleteAny',
-                    'forceDelete',
-                    'forceDeleteAny',
-                ],
-                PostResource::class => [
-                    'viewAny',
-                    'view',
-                    'create',
-                    'update',
-                    'restore',
-                    'restoreAny',
-                    'delete',
-                    'deleteAny',
-                    'forceDelete',
-                    'forceDeleteAny',
-                ],
+            $standardPermissions = [
+                'viewAny',
+                'view',
+                'create',
+                'update',
+                'restore',
+                'restoreAny',
+                'delete',
+                'deleteAny',
+                'forceDelete',
+                'forceDeleteAny',
             ];
+
+            $pluginManage = array_fill_keys([
+                CountryResource::class,
+                RegionResource::class,
+                CurrencyResource::class,
+                TariffCodeResource::class,
+                PostResource::class,
+            ], $standardPermissions);
 
             $manage = array_replace_recursive($manage, $pluginManage);
             config()->set('filament-shield.resources.manage', $manage);
