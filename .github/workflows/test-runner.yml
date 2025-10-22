@@ -60,13 +60,15 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-latest
           restore-keys: |
+            playwright-${{ runner.os }}-latest
             playwright-${{ runner.os }}-
 
       - name: Install and update Playwright
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: |
-          npm install playwright@latest
-          npx playwright install --with-deps
+          if [ ! -d ~/.cache/ms-playwright ]; then
+            npm install playwright@latest
+            npx playwright install --with-deps
+          fi
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
