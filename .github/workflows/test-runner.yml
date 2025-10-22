@@ -19,7 +19,7 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # Define the matrix of different PHP, Laravel, and testbench versions
+    # Define the matrix of different PHP, Laravel, testbench versions, and shards
     strategy:
       # Fail the whole workflow if one of the jobs fails
       fail-fast: true
@@ -27,6 +27,7 @@ jobs:
         php: [ 8.2, 8.3, 8.4 ]
         laravel: [ 11.*, 12.* ]
         dependency-version: [ prefer-stable ]
+        shard: [ 1, 2, 3, 4 ]
         include:
           # Laravel 12 uses Orchestra Testbench 10
           - laravel: 12.*
@@ -34,7 +35,7 @@ jobs:
           # Laravel 11 uses Orchestra Testbench 9
           - laravel: 11.*
             testbench: 9.*
-    name: PHP ${{ matrix.php }} / L${{ matrix.laravel }} / ${{ matrix.dependency-version }}
+    name: PHP ${{ matrix.php }} / L${{ matrix.laravel }} / ${{ matrix.dependency-version }} / Shard ${{ matrix.shard }}/4
 
     steps:
 
@@ -61,7 +62,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: xdebug
-          # extensions: mbstring, gd, intl
+          extensions: mbstring, gd, intl, pcntl
 
       - name: Install dependencies
         run: |
@@ -69,11 +70,11 @@ jobs:
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-progress --no-interaction
 
       - name: Run test suite
-        run: composer test -- --coverage-clover ./coverage.xml
+        run: composer test -- --shard=${{ matrix.shard }}/4 --coverage-clover ./coverage.xml
 
       - name: Upload coverage reports to Codecov
         # Make sure the Codecov action is only executed once
-        if: matrix.php == '8.2' && matrix.laravel == '12.*' && matrix.dependency-version == 'prefer-stable'
+        if: matrix.php == '8.2' && matrix.laravel == '12.*' && matrix.dependency-version == 'prefer-stable' && matrix.shard == 1
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

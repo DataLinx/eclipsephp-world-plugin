@@ -53,8 +53,10 @@
     "require-dev": {
         "laravel/pint": "^1.21",
         "orchestra/testbench": "^9.9|^10.0",
-        "pestphp/pest": "^3.7",
-        "pestphp/pest-plugin-livewire": "^3.0"
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-browser": "^4.0",
+        "pestphp/pest-plugin-laravel": "^4.0",
+        "pestphp/pest-plugin-livewire": "^4.0"
     },
     "scripts": {
         "post-autoload-dump": [
@@ -64,7 +66,12 @@
         "post-install-cmd": "@setup",
         "post-update-cmd": "@setup",
         "format": "vendor/bin/pint",
-        "test": "vendor/bin/testbench package:test",
+        "test": "vendor/bin/testbench package:test --parallel",
+        "test-shard": "vendor/bin/pest --shard=%SHARD%/%SHARDS%",
+        "test-shard-1": "vendor/bin/pest --shard=1/4",
+        "test-shard-2": "vendor/bin/pest --shard=2/4",
+        "test-shard-3": "vendor/bin/pest --shard=3/4",
+        "test-shard-4": "vendor/bin/pest --shard=4/4",
         "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
         "prepare": "@php vendor/bin/testbench package:discover --ansi",
         "build": "@php vendor/bin/testbench workbench:build --ansi",

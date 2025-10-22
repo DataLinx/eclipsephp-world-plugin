@@ -40,7 +40,10 @@ abstract class TestCase extends BaseTestCase
      */
     protected function setUpSuperAdmin(): self
     {
-        $this->superAdmin = User::factory()->create();
+        $this->superAdmin = User::factory()->create([
+            'name' => 'Test Super Admin',
+            'email' => 'test@example.com',
+        ]);
 
         // Assign super admin role and give all permissions
         $superAdminRole = \Spatie\Permission\Models\Role::where('name', 'super_admin')->first();

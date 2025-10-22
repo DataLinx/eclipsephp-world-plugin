@@ -8,5 +8,8 @@
         "@commitlint/cli": "^19.7.1",
         "@commitlint/config-conventional": "^19.7.1",
         "husky": "^9.1.7"
+    },
+    "dependencies": {
+        "playwright": "^1.56.1"
     }
 }
