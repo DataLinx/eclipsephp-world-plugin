@@ -79,13 +79,21 @@ jobs:
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update
           composer require "orchestra/testbench:${{ matrix.testbench }}" --dev --no-interaction --no-update
-          composer update --${{ matrix.dependency-version }} --prefer-dist --no-progress --no-interaction
+          composer update --${{ matrix.dependency-version }} --prefer-dist --no-progress --no-interaction --no-scripts
 
       - name: Setup testbench environment
         run: |
+          # Ensure .env file exists with proper APP_KEY
           cp workbench/.env.example workbench/.env
           sed -i 's/APP_KEY=/APP_KEY=base64:ZQvPGC7uVADkjOgtGIIuCI8u3\/Pzu+VaRObIbHsgjCc=/' workbench/.env
           sed -i 's/APP_ENV=local/APP_ENV=testing/' workbench/.env
+          # Verify the key was set correctly
+          grep "APP_KEY=base64:" workbench/.env
+          # Run the remaining setup steps that composer setup would run
+          npm install
+          php vendor/bin/testbench vendor:publish --tag='filament-shield-config'
+          php vendor/bin/testbench filament:assets
+          php vendor/bin/testbench package:sync-skeleton
 
       - name: Run test suite
         run: vendor/bin/pest --shard=${{ matrix.shard }}/4 --parallel --coverage-clover ./coverage.xml
