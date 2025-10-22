@@ -81,7 +81,7 @@ jobs:
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-progress --no-interaction
 
       - name: Run test suite
-        run: vendor/bin/pest --shard=${{ matrix.shard }}/4 --coverage-clover ./coverage.xml
+        run: vendor/bin/pest --shard=${{ matrix.shard }}/4 --parallel --coverage-clover ./coverage.xml
 
       - name: Upload coverage reports to Codecov
         # Make sure the Codecov action is only executed once
