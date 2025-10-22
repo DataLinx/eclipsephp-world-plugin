@@ -77,8 +77,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
+          composer require "laravel/framework:${{ matrix.laravel }}" --no-interaction --no-update
+          composer require "orchestra/testbench:${{ matrix.testbench }}" --dev --no-interaction --no-update
           composer update --${{ matrix.dependency-version }} --prefer-dist --no-progress --no-interaction
+
+      - name: Setup testbench environment
+        run: |
+          cp workbench/.env.example workbench/.env
+          sed -i 's/APP_KEY=/APP_KEY=base64:ZQvPGC7uVADkjOgtGIIuCI8u3\/Pzu+VaRObIbHsgjCc=/' workbench/.env
+          sed -i 's/APP_ENV=local/APP_ENV=testing/' workbench/.env
 
       - name: Run test suite
         run: vendor/bin/pest --shard=${{ matrix.shard }}/4 --parallel --coverage-clover ./coverage.xml
