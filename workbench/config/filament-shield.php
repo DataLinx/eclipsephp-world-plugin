@@ -4,6 +4,7 @@ use BezhanSalleh\FilamentShield\Resources\Roles\RoleResource;
 use Filament\Pages\Dashboard;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
+use Workbench\App\Models\User;
 
 return [
     'shield_resource' => [
@@ -20,7 +21,7 @@ return [
 
     'tenant_model' => null,
 
-    'auth_provider_model' => Workbench\App\Models\User::class,
+    'auth_provider_model' => User::class,
 
     'super_admin' => [
         'enabled' => true,

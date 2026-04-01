@@ -4,6 +4,8 @@ namespace Tests;
 
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Workbench\App\Models\User;
 
 abstract class TestCase extends BaseTestCase
@@ -43,11 +45,11 @@ abstract class TestCase extends BaseTestCase
         $this->superAdmin = User::factory()->create();
 
         // Assign super admin role and give all permissions
-        $superAdminRole = \Spatie\Permission\Models\Role::where('name', 'super_admin')->first();
+        $superAdminRole = Role::where('name', 'super_admin')->first();
         if ($superAdminRole) {
             $this->superAdmin->assignRole($superAdminRole);
             // Give all permissions to super admin role
-            $permissions = \Spatie\Permission\Models\Permission::all();
+            $permissions = Permission::all();
             $superAdminRole->syncPermissions($permissions);
         }
 
@@ -104,7 +106,7 @@ abstract class TestCase extends BaseTestCase
 
         foreach ($resources as $resource) {
             foreach ($permissions as $permission) {
-                \Spatie\Permission\Models\Permission::create([
+                Permission::create([
                     'name' => $permission.'_'.$resource,
                     'guard_name' => 'web',
                 ]);
@@ -119,12 +121,12 @@ abstract class TestCase extends BaseTestCase
      */
     protected function createRoles(): self
     {
-        \Spatie\Permission\Models\Role::create([
+        Role::create([
             'name' => 'super_admin',
             'guard_name' => 'web',
         ]);
 
-        \Spatie\Permission\Models\Role::create([
+        Role::create([
             'name' => 'panel_user',
             'guard_name' => 'web',
         ]);
