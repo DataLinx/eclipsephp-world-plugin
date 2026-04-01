@@ -5,11 +5,11 @@ namespace Eclipse\World;
 use Eclipse\World\Console\Commands\ImportCommand;
 use Eclipse\World\Console\Commands\ImportPostsCommand;
 use Eclipse\World\Console\Commands\ImportTariffCodesCommand;
-use Eclipse\World\Filament\Resources\CountryResource;
-use Eclipse\World\Filament\Resources\CurrencyResource;
-use Eclipse\World\Filament\Resources\PostResource;
-use Eclipse\World\Filament\Resources\RegionResource;
-use Eclipse\World\Filament\Resources\TariffCodeResource;
+use Eclipse\World\Filament\Clusters\World\Resources\CountryResource;
+use Eclipse\World\Filament\Clusters\World\Resources\CurrencyResource;
+use Eclipse\World\Filament\Clusters\World\Resources\PostResource;
+use Eclipse\World\Filament\Clusters\World\Resources\RegionResource;
+use Eclipse\World\Filament\Clusters\World\Resources\TariffCodeResource;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
