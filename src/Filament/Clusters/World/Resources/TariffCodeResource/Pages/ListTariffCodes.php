@@ -2,7 +2,7 @@
 
 namespace Eclipse\World\Filament\Clusters\World\Resources\TariffCodeResource\Pages;
 
-use Eclipse\Core\Models\Locale;
+use Eclipse\Common\Helpers\L10nHelper;
 use Eclipse\World\Filament\Clusters\World\Resources\TariffCodeResource;
 use Eclipse\World\Jobs\ImportTariffCodes;
 use Filament\Actions\Action;
@@ -31,7 +31,7 @@ class ListTariffCodes extends ListRecords
                 ->schema([
                     Select::make('locales')
                         ->label(__('eclipse-world::tariff-codes.import.locales_label'))
-                        ->options(Locale::getAvailableLocales()->pluck('id', 'id')->toArray())
+                        ->options(L10nHelper::getLocaleOptions())
                         ->multiple()
                         ->required()
                         ->native(false),

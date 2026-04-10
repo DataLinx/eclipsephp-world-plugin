@@ -2,7 +2,7 @@
 
 namespace Eclipse\World\Console\Commands;
 
-use Eclipse\Core\Models\Locale;
+use Eclipse\Common\Helpers\L10nHelper;
 use Eclipse\World\Jobs\ImportTariffCodes;
 use Illuminate\Console\Command;
 
@@ -29,7 +29,7 @@ class ImportTariffCodesCommand extends Command
     {
         $locales = (array) $this->option('locales');
         if (empty($locales)) {
-            $available = Locale::getAvailableLocales()->pluck('id')->toArray();
+            $available = L10nHelper::getAvailableLocales();
             $selected = $this->choice('Select locales to import (comma-select with multiple)', $available, null, null, true);
             $locales = $selected ?: $available;
         }

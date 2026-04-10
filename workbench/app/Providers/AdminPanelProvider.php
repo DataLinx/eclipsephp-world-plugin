@@ -3,6 +3,7 @@
 namespace Workbench\App\Providers;
 
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Eclipse\Common\Helpers\L10nHelper;
 use Eclipse\World\EclipseWorld;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -48,7 +49,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
                 EclipseWorld::make(),
                 SpatieTranslatablePlugin::make()
-                    ->defaultLocales(['en']),
+                    ->defaultLocales(array_keys(L10nHelper::getAvailableLocales())),
             ])
             ->viteTheme(false)
             ->pages([
