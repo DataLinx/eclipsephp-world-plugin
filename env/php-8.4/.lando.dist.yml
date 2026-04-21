@@ -1,11 +1,11 @@
-name: eclipse-world-8.3
+name: eclipse-world-8.4
 services:
   appserver:
-    type: php:custom
+    type: php:8.4
     via: cli
     app_mount: delegated
     overrides:
-      image: slimdeluxe/php:8.3-v1.0
+      image: slimdeluxe/php:8.4-v1.4
       volumes:
         # Mount the project root directory to /app
         - "../..:/app"

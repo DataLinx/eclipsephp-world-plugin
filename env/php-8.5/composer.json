@@ -1,0 +1,41 @@
+{
+    "name": "eclipsephp/world-plugin",
+    "require": {
+        "wikimedia/composer-merge-plugin": "dev-master"
+    },
+    "extra": {
+        "merge-plugin": {
+            "require": [
+                "/usr/local/src/composer.json"
+            ],
+            "merge-scripts": true
+        },
+        "laravel": {
+            "providers": [
+                "Eclipse\\World\\EclipseWorldServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "lock": false,
+        "allow-plugins": {
+            "wikimedia/composer-merge-plugin": true,
+            "pestphp/pest-plugin": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Eclipse\\World\\": "src/",
+            "Eclipse\\World\\Factories\\": "database/factories/",
+            "Eclipse\\World\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    }
+}
