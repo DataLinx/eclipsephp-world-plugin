@@ -2,6 +2,7 @@
 
 namespace Eclipse\World\Filament\Clusters\World\Resources;
 
+use Eclipse\Common\Filament\Concerns\HasCachedAbilityChecks;
 use Eclipse\World\Filament\Clusters\World;
 use Eclipse\World\Filament\Clusters\World\Resources\CurrencyResource\Pages\ListCurrencies;
 use Eclipse\World\Models\Currency;
@@ -23,10 +24,13 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CurrencyResource extends Resource
 {
+    use HasCachedAbilityChecks;
+
     protected static ?string $model = Currency::class;
 
     protected static ?string $slug = 'currencies';
@@ -34,6 +38,51 @@ class CurrencyResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
 
     protected static ?string $cluster = World::class;
+
+    public static function canUpdateAny(): bool
+    {
+        return static::canOnce('update_currency');
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return static::canOnce('delete_currency');
+    }
+
+    public static function canRestoreAny(): bool
+    {
+        return static::canOnce('restore_currency');
+    }
+
+    public static function canForceDeleteAny(): bool
+    {
+        return static::canOnce('force_delete_currency');
+    }
+
+    public static function canBulkDelete(): bool
+    {
+        return static::canOnce('delete_any_currency');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::canUpdateAny();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canDeleteAny() && ! $record->trashed();
+    }
+
+    public static function canRestore(Model $record): bool
+    {
+        return static::canRestoreAny() && $record->trashed();
+    }
+
+    public static function canForceDelete(Model $record): bool
+    {
+        return static::canForceDeleteAny() && $record->trashed();
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -59,7 +108,6 @@ class CurrencyResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->defaultPaginationPageOption(50)
             ->defaultSort('name')
             ->striped()
             ->columns([
@@ -85,30 +133,45 @@ class CurrencyResource extends Resource
             ->recordActions([
                 EditAction::make()
                     ->label(__('eclipse-world::currencies.actions.edit.label'))
-                    ->modalHeading(__('eclipse-world::currencies.actions.edit.heading')),
+                    ->modalHeading(__('eclipse-world::currencies.actions.edit.heading'))
+                    ->authorize(fn () => self::canUpdateAny()),
+
                 ActionGroup::make([
                     DeleteAction::make()
                         ->label(__('eclipse-world::currencies.actions.delete.label'))
-                        ->modalHeading(__('eclipse-world::currencies.actions.delete.heading')),
+                        ->modalHeading(__('eclipse-world::currencies.actions.delete.heading'))
+                        ->visible(fn (Currency $record) => ! $record->trashed())
+                        ->authorize(fn () => self::canDeleteAny()),
+
                     RestoreAction::make()
                         ->label(__('eclipse-world::currencies.actions.restore.label'))
-                        ->modalHeading(__('eclipse-world::currencies.actions.restore.heading')),
+                        ->modalHeading(__('eclipse-world::currencies.actions.restore.heading'))
+                        ->visible(fn (Currency $record) => $record->trashed())
+                        ->authorize(fn () => self::canRestoreAny()),
+
                     ForceDeleteAction::make()
                         ->label(__('eclipse-world::currencies.actions.force_delete.label'))
                         ->modalHeading(__('eclipse-world::currencies.actions.force_delete.heading'))
                         ->modalDescription(fn (Currency $record): string => __('eclipse-world::currencies.actions.force_delete.description', [
                             'name' => $record->name,
-                        ])),
+                        ]))
+                        ->visible(fn (Currency $record) => $record->trashed())
+                        ->authorize(fn () => self::canForceDeleteAny()),
                 ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->label(__('eclipse-world::currencies.actions.delete.label')),
+                        ->label(__('eclipse-world::currencies.actions.delete.label'))
+                        ->authorize(fn () => self::canBulkDelete()),
+
                     RestoreBulkAction::make()
-                        ->label(__('eclipse-world::currencies.actions.restore.label')),
+                        ->label(__('eclipse-world::currencies.actions.restore.label'))
+                        ->authorize(fn () => self::canRestoreAny()),
+
                     ForceDeleteBulkAction::make()
-                        ->label(__('eclipse-world::currencies.actions.force_delete.label')),
+                        ->label(__('eclipse-world::currencies.actions.force_delete.label'))
+                        ->authorize(fn () => self::canForceDeleteAny()),
                 ]),
             ]);
     }

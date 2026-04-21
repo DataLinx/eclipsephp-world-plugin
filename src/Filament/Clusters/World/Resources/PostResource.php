@@ -2,6 +2,7 @@
 
 namespace Eclipse\World\Filament\Clusters\World\Resources;
 
+use Eclipse\Common\Filament\Concerns\HasCachedAbilityChecks;
 use Eclipse\World\Filament\Clusters\World;
 use Eclipse\World\Filament\Clusters\World\Resources\PostResource\Pages\ListPosts;
 use Eclipse\World\Models\Post;
@@ -24,11 +25,14 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Validation\Rule;
 
 class PostResource extends Resource
 {
+    use HasCachedAbilityChecks;
+
     protected static ?string $model = Post::class;
 
     protected static ?string $slug = 'posts';
@@ -36,6 +40,51 @@ class PostResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $cluster = World::class;
+
+    public static function canUpdateAny(): bool
+    {
+        return static::canOnce('update_post');
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return static::canOnce('delete_post');
+    }
+
+    public static function canRestoreAny(): bool
+    {
+        return static::canOnce('restore_post');
+    }
+
+    public static function canForceDeleteAny(): bool
+    {
+        return static::canOnce('force_delete_post');
+    }
+
+    public static function canBulkDelete(): bool
+    {
+        return static::canOnce('delete_any_post');
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return static::canUpdateAny();
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return static::canDeleteAny() && ! $record->trashed();
+    }
+
+    public static function canRestore(Model $record): bool
+    {
+        return static::canRestoreAny() && $record->trashed();
+    }
+
+    public static function canForceDelete(Model $record): bool
+    {
+        return static::canForceDeleteAny() && $record->trashed();
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -99,30 +148,45 @@ class PostResource extends Resource
             ->recordActions([
                 EditAction::make()
                     ->label(__('eclipse-world::posts.actions.edit.label'))
-                    ->modalHeading(__('eclipse-world::posts.actions.edit.heading')),
+                    ->modalHeading(__('eclipse-world::posts.actions.edit.heading'))
+                    ->authorize(fn () => self::canUpdateAny()),
+
                 ActionGroup::make([
                     DeleteAction::make()
                         ->label(__('eclipse-world::posts.actions.delete.label'))
-                        ->modalHeading(__('eclipse-world::posts.actions.delete.heading')),
+                        ->modalHeading(__('eclipse-world::posts.actions.delete.heading'))
+                        ->visible(fn (Post $record) => ! $record->trashed())
+                        ->authorize(fn () => self::canDeleteAny()),
+
                     RestoreAction::make()
                         ->label(__('eclipse-world::posts.actions.restore.label'))
-                        ->modalHeading(__('eclipse-world::posts.actions.restore.heading')),
+                        ->modalHeading(__('eclipse-world::posts.actions.restore.heading'))
+                        ->visible(fn (Post $record) => $record->trashed())
+                        ->authorize(fn () => self::canRestoreAny()),
+
                     ForceDeleteAction::make()
                         ->label(__('eclipse-world::posts.actions.force_delete.label'))
                         ->modalHeading(__('eclipse-world::posts.actions.force_delete.heading'))
                         ->modalDescription(fn (Post $record): string => __('eclipse-world::posts.actions.force_delete.description', [
                             'name' => $record->name,
-                        ])),
+                        ]))
+                        ->visible(fn (Post $record) => $record->trashed())
+                        ->authorize(fn () => self::canForceDeleteAny()),
                 ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->label(__('eclipse-world::posts.actions.delete.label')),
+                        ->label(__('eclipse-world::posts.actions.delete.label'))
+                        ->authorize(fn () => self::canBulkDelete()),
+
                     RestoreBulkAction::make()
-                        ->label(__('eclipse-world::posts.actions.restore.label')),
+                        ->label(__('eclipse-world::posts.actions.restore.label'))
+                        ->authorize(fn () => self::canRestoreAny()),
+
                     ForceDeleteBulkAction::make()
-                        ->label(__('eclipse-world::posts.actions.force_delete.label')),
+                        ->label(__('eclipse-world::posts.actions.force_delete.label'))
+                        ->authorize(fn () => self::canForceDeleteAny()),
                 ]),
             ]);
     }
@@ -139,7 +203,8 @@ class PostResource extends Resource
         return parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ]);
+            ])
+            ->with('country');
     }
 
     public static function getNavigationLabel(): string

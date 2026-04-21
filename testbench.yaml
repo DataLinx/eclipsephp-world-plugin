@@ -2,7 +2,7 @@ laravel: '@testbench'
 
 env:
   - DB_CONNECTION=sqlite
-  - DB_DATABASE=/app/workbench/database/database.sqlite
+  - DB_DATABASE=workbench/database/database.sqlite
   - APP_KEY=base64:ZQvPGC7uVADkjOgtGIIuCI8u3/Pzu+VaRObIbHsgjCc=
   - APP_ENV=local
   - APP_DEBUG=true
