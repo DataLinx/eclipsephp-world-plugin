@@ -40,7 +40,7 @@
         }
     },
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "bezhansalleh/filament-shield": "^4.0",
         "datalinx/php-utils": "^2.5",
         "eclipsephp/common": "dev-main",
@@ -85,6 +85,7 @@
             "@php vendor/bin/testbench key:generate --ansi",
             "npm install",
             "@php vendor/bin/testbench vendor:publish --tag='filament-shield-config'",
+            "@php vendor/bin/testbench vendor:publish --tag='eclipse-common-config'",
             "@php vendor/bin/testbench filament:assets",
             "@php vendor/bin/testbench package:sync-skeleton"
         ]

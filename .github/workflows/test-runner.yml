@@ -24,7 +24,7 @@ jobs:
       # Fail the whole workflow if one of the jobs fails
       fail-fast: true
       matrix:
-        php: [ 8.3, 8.4 ]
+        php: [ 8.3, 8.4, 8.5 ]
         laravel: [ 11.*, 12.* ]
         dependency-version: [ prefer-stable ]
         shard: [ 1, 2, 3, 4 ]
@@ -43,7 +43,7 @@ jobs:
       #  run: sudo apt-get update && sudo apt-get install -y locales locales-all
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
@@ -75,7 +75,7 @@ jobs:
 
       - name: Cache Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v5.0.5
         with:
           path: vendor
           key: php-${{ matrix.php }}-laravel-${{ matrix.laravel }}-${{ matrix.dependency-version }}-${{ hashFiles('**/composer.lock') }}
@@ -110,8 +110,9 @@ jobs:
       - name: Upload coverage reports to Codecov
         # Make sure the Codecov action is only executed once
         if: matrix.php == '8.3' && matrix.laravel == '12.*' && matrix.dependency-version == 'prefer-stable' && matrix.shard == 1
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6.0.0
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml
           verbose: true

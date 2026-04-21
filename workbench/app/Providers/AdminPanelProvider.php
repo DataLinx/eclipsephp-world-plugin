@@ -1,9 +1,13 @@
 <?php
 
+/** @noinspection PhpMultipleClassDeclarationsInspection */
+
 namespace Workbench\App\Providers;
 
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Eclipse\Common\Helpers\L10nHelper;
 use Eclipse\World\EclipseWorld;
+use Exception;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -24,6 +28,12 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        try {
+            $locales = array_keys(L10nHelper::getAvailableLocales());
+        } catch (Exception) {
+            $locales = ['en', 'sl'];
+        }
+
         return $panel
             ->default()
             ->id('admin')
@@ -48,16 +58,11 @@ class AdminPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
                 EclipseWorld::make(),
                 SpatieTranslatablePlugin::make()
-                    ->defaultLocales(['en']),
+                    ->defaultLocales($locales),
             ])
             ->viteTheme(false)
             ->pages([
                 Dashboard::class,
             ]);
-    }
-
-    public function register(): void
-    {
-        parent::register();
     }
 }

@@ -1,5 +1,8 @@
 <?php
 
+use Eclipse\Core\Models\Site;
+use Eclipse\Core\Models\User;
+
 return [
     'shield_resource' => [
         'slug' => 'shield/roles',
@@ -13,9 +16,9 @@ return [
         ],
     ],
 
-    'tenant_model' => \Eclipse\Core\Models\Site::class,
+    'tenant_model' => Site::class,
 
-    'auth_provider_model' => \Eclipse\Core\Models\User::class,
+    'auth_provider_model' => User::class,
 
     'super_admin' => [
         'enabled' => true,

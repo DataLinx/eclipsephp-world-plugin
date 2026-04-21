@@ -8,14 +8,13 @@ config:
   database: mariadb:10.11
 services:
   appserver:
-    type: php:custom
     xdebug: "debug,develop,coverage"
     environment:
       TZ: "Europe/Ljubljana"
       APP_BASE_PATH: "/app/workbench"
       TESTBENCH_WORKING_PATH: "/app"
     overrides:
-      image: slimdeluxe/php:8.3-v1.3
+      image: slimdeluxe/php:8.3-v1.4
       platform: linux/amd64
     run:
       - composer install --no-interaction --prefer-dist
