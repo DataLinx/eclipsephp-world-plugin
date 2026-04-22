@@ -19,6 +19,7 @@ describe('Smoke Tests', function () {
         ];
 
         foreach ($resources as $resource) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->get($resource::getUrl())
                 ->assertSuccessful()
                 ->assertSee('Filament');
@@ -62,10 +63,11 @@ describe('Smoke Tests', function () {
         ];
 
         foreach ($resources as $resource) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $response = $this->get($resource::getUrl());
 
             $response->assertSuccessful();
-            $response->assertHeader('content-type', 'text/html; charset=UTF-8');
+            $response->assertHeader('content-type', 'text/html; charset=utf-8');
             $response->assertSee('<!DOCTYPE html>', false);
         }
     });
@@ -79,6 +81,7 @@ describe('Smoke Tests', function () {
         ];
 
         foreach ($resources as $resource) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $response = $this->get($resource::getUrl());
 
             $response->assertSuccessful();
