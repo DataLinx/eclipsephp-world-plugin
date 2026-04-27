@@ -5,7 +5,7 @@ services:
     via: cli
     app_mount: delegated
     overrides:
-      image: slimdeluxe/php:8.5-v1.4
+      image: slimdeluxe/php:8.5-v1.5
       volumes:
         # Mount the project root directory to /app
         - "../..:/app"

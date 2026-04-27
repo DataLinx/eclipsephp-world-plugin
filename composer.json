@@ -79,6 +79,7 @@
             "@php -r \"if (!file_exists('workbench/.env')) { copy('workbench/.env.example', 'workbench/.env'); echo '.env file created from .env.example\\n'; }\"",
             "@php vendor/bin/testbench key:generate --ansi",
             "npm install",
+            "npx playwright install --with-deps",
             "@php vendor/bin/testbench vendor:publish --tag='filament-shield-config'",
             "@php vendor/bin/testbench vendor:publish --tag='eclipse-common-config'",
             "@php vendor/bin/testbench filament:assets",
