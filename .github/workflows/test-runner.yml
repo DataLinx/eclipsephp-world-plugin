@@ -85,7 +85,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
-          extensions: mbstring, gd, intl, pcntl
+          extensions: mbstring, gd, intl, pcntl, sockets
 
       - name: Install dependencies
         run: |
@@ -105,4 +105,4 @@ jobs:
           php vendor/bin/testbench package:sync-skeleton
 
       - name: Run test suite
-        run: vendor/bin/pest --shard=${{ matrix.shard }}/4 --parallel
+        run: vendor/bin/pest --ci --shard=${{ matrix.shard }}/4 --parallel
