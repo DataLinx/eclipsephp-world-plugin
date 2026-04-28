@@ -31,29 +31,6 @@ jobs:
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Cache Playwright browsers
-        id: playwright-cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-latest
-          restore-keys: |
-            playwright-${{ runner.os }}-latest
-            playwright-${{ runner.os }}-
-
-      - name: Install and update Playwright
-        run: |
-          if [ ! -d ~/.cache/ms-playwright ]; then
-            npm install playwright@latest
-            npx playwright install --with-deps
-          fi
-
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
