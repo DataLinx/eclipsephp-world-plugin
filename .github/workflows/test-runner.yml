@@ -19,15 +19,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    # Define the matrix of different PHP, Laravel, testbench versions, and shards
+    # Define the matrix of different PHP, Laravel, and testbench versions
     strategy:
       # Fail the whole workflow if one of the jobs fails
-      fail-fast: false
+      fail-fast: true
       matrix:
         php: [ 8.3, 8.4, 8.5 ]
         laravel: [ 11.*, 12.* ]
         dependency-version: [ prefer-stable ]
-        #shard: [ 1, 2, 3, 4 ]
         include:
           # Laravel 12 uses Orchestra Testbench 10
           - laravel: 12.*
@@ -35,7 +34,7 @@ jobs:
           # Laravel 11 uses Orchestra Testbench 9
           - laravel: 11.*
             testbench: 9.*
-    name: PHP ${{ matrix.php }} / L${{ matrix.laravel }} / ${{ matrix.dependency-version }} #/ Shard ${{ matrix.shard }}/4
+    name: PHP ${{ matrix.php }} / L${{ matrix.laravel }} / ${{ matrix.dependency-version }}
 
     steps:
 
@@ -82,5 +81,4 @@ jobs:
           php vendor/bin/testbench package:sync-skeleton
 
       - name: Run test suite
-        #run: vendor/bin/pest --ci --shard=${{ matrix.shard }}/4 --parallel
         run: vendor/bin/pest --ci --parallel
