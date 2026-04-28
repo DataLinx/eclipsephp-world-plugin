@@ -14,7 +14,7 @@ services:
       APP_BASE_PATH: "/app/workbench"
       TESTBENCH_WORKING_PATH: "/app"
     overrides:
-      image: slimdeluxe/php:8.3-v1.4
+      image: slimdeluxe/php:8.3-v1.5
       platform: linux/amd64
     run:
       - composer install --no-interaction --prefer-dist
