@@ -1,0 +1,89 @@
+{
+    "name": "eclipsephp/world-plugin",
+    "description": "Filament plugin for world data",
+    "keywords": [
+        "eclipse",
+        "filament",
+        "laravel"
+    ],
+    "homepage": "https://github.com/DataLinx/eclipsephp-world",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "DataLinx",
+            "email": "info@datalinx.si"
+        }
+    ],
+    "config": {
+        "lock": false,
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "Eclipse\\World\\": "src/",
+            "Eclipse\\World\\Factories\\": "database/factories/",
+            "Eclipse\\World\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/",
+            "Workbench\\App\\": "workbench/app/",
+            "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+            "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+        }
+    },
+    "require": {
+        "php": "^8.3",
+        "datalinx/php-utils": "^2.5",
+        "eclipsephp/common": "dev-main",
+        "filament/filament": "^5.0",
+        "lara-zeus/spatie-translatable": "^2.0",
+        "laravel/framework": "^11.0|^12.0",
+        "spatie/laravel-package-tools": "^1.19",
+        "spatie/laravel-translatable": "^6.11"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.21",
+        "orchestra/testbench": "^9.9|^10.11",
+        "pestphp/pest": "^4.7",
+        "pestphp/pest-plugin-laravel": "^4.1",
+        "pestphp/pest-plugin-livewire": "^4.1"
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "@clear",
+            "@prepare"
+        ],
+        "post-install-cmd": "@setup",
+        "post-update-cmd": "@setup",
+        "format": "vendor/bin/pint",
+        "test": "vendor/bin/pest --parallel",
+        "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+        "prepare": "@php vendor/bin/testbench package:discover --ansi",
+        "build": "@php vendor/bin/testbench workbench:build --ansi",
+        "setup": [
+            "@php -r \"if (!file_exists('workbench/.env')) { copy('workbench/.env.example', 'workbench/.env'); echo '.env file created from .env.example\\n'; }\"",
+            "@php vendor/bin/testbench key:generate --ansi",
+            "npm install",
+            "@php vendor/bin/testbench vendor:publish --tag='eclipse-common-config'",
+            "@php vendor/bin/testbench filament:assets",
+            "@php vendor/bin/testbench package:sync-skeleton",
+            "@php vendor/bin/testbench workbench:create-sqlite-db"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Eclipse\\World\\EclipseWorldServiceProvider"
+            ]
+        }
+    }
+}

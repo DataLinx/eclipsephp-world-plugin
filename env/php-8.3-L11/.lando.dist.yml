@@ -1,0 +1,28 @@
+name: eclipse-world-8.3-l11
+services:
+  appserver:
+    type: php:8.3
+    via: cli
+    app_mount: delegated
+    overrides:
+      image: slimdeluxe/php:8.3-v1.5
+      volumes:
+        # Mount the project root directory to /app
+        - "../..:/app"
+        # Prevent the source vendor directory to be mounted
+        - /app/vendor
+        # Override the default composer.json
+        - "./composer.json:/app/composer.json"
+tooling:
+  php:
+    service: appserver
+  composer:
+    service: appserver
+  test:
+    service: appserver
+    description: Run tests
+    cmd: "composer test"
+  testbench:
+    service: appserver
+    description: Run testbench CLI
+    cmd: "vendor/bin/testbench"
