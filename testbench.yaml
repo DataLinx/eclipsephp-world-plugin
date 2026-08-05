@@ -17,6 +17,9 @@ migrations:
   - workbench/database/migrations
   - database/migrations
 
+seeders:
+  - database/seeders/WorldSeeder
+
 workbench:
   start: '/'
   install: true

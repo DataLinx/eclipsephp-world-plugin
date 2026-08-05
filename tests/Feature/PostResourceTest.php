@@ -8,43 +8,6 @@ use Filament\Actions\Testing\TestAction;
 
 use function Pest\Livewire\livewire;
 
-beforeEach(function () {
-    $this->setUpSuperAdmin();
-});
-
-test('unauthorized access can be prevented', function () {
-    // Create regular user with no permissions
-    $this->setUpCommonUser();
-
-    // Create test data
-    $country = Country::factory()->create();
-    $post = Post::factory()->create(['country_id' => $country->id]);
-
-    // View table
-    $this->get(PostResource::getUrl())
-        ->assertForbidden();
-
-    // Add direct permission to view the table, since otherwise any other action below is not available even for testing
-    $this->user->givePermissionTo('view_any_post');
-
-    // Create post
-    livewire(ListPosts::class)
-        ->assertActionDisabled('create');
-
-    // Edit post
-    livewire(ListPosts::class)
-        ->assertCanSeeTableRecords([$post])
-        ->assertTableActionDisabled('edit', $post);
-
-    // Delete post
-    livewire(ListPosts::class)
-        ->assertTableActionDisabled('delete', $post)
-        ->assertTableBulkActionDisabled('delete');
-
-    $post->delete();
-    $this->assertSoftDeleted($post);
-});
-
 test('posts table can be displayed', function () {
     $this->get(PostResource::getUrl())
         ->assertSuccessful();

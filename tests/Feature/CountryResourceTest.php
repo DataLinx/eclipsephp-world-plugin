@@ -9,42 +9,6 @@ use Illuminate\Support\Arr;
 
 use function Pest\Livewire\livewire;
 
-beforeEach(function () {
-    $this->setUpSuperAdmin();
-});
-
-test('unauthorized access can be prevented', function () {
-    // Create regular user with no permissions
-    $this->setUpCommonUser();
-
-    // Create test country
-    $country = Country::factory()->create();
-
-    // View table
-    $this->get(CountryResource::getUrl())
-        ->assertForbidden();
-
-    // Add direct permission to view the table, since otherwise any other action below is not available even for testing
-    $this->user->givePermissionTo('view_any_country');
-
-    // Create country
-    livewire(ListCountries::class)
-        ->assertActionDisabled('create');
-
-    // Edit country
-    livewire(ListCountries::class)
-        ->assertCanSeeTableRecords([$country])
-        ->assertTableActionDisabled('edit', $country);
-
-    // Delete country
-    livewire(ListCountries::class)
-        ->assertTableActionDisabled('delete', $country)
-        ->assertTableBulkActionDisabled('delete');
-
-    $country->delete();
-    $this->assertSoftDeleted($country);
-});
-
 test('countries table can be displayed', function () {
     $this->get(CountryResource::getUrl())
         ->assertSuccessful();

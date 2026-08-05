@@ -4,7 +4,6 @@
 
 namespace Workbench\App\Providers;
 
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Eclipse\Common\Helpers\L10nHelper;
 use Eclipse\World\EclipseWorld;
 use Exception;
@@ -55,7 +54,6 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->plugins([
-                FilamentShieldPlugin::make(),
                 EclipseWorld::make(),
                 SpatieTranslatablePlugin::make()
                     ->defaultLocales($locales),

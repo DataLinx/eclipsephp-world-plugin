@@ -4,15 +4,11 @@ namespace Tests;
 
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Workbench\App\Models\User;
 
 abstract class TestCase extends BaseTestCase
 {
     use WithWorkbench;
-
-    protected ?User $superAdmin = null;
 
     protected ?User $user = null;
 
@@ -38,33 +34,9 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * Set up default "super admin" user
+     * Set up a user
      */
-    protected function setUpSuperAdmin(): self
-    {
-        $this->superAdmin = User::factory()->create([
-            'name' => 'Test Super Admin',
-            'email' => 'test@example.com',
-        ]);
-
-        // Assign super admin role and give all permissions
-        $superAdminRole = Role::where('name', 'super_admin')->first();
-        if ($superAdminRole) {
-            $this->superAdmin->assignRole($superAdminRole);
-            // Give all permissions to super admin role
-            $permissions = Permission::all();
-            $superAdminRole->syncPermissions($permissions);
-        }
-
-        $this->actingAs($this->superAdmin);
-
-        return $this;
-    }
-
-    /**
-     * Set up a common user with no roles or permissions
-     */
-    protected function setUpCommonUser(): self
+    protected function setUpUser(): self
     {
         $this->user = User::factory()->create();
 
@@ -79,61 +51,5 @@ abstract class TestCase extends BaseTestCase
             // A list of packages that should not be auto-discovered when running tests
             'laravel/telescope',
         ];
-    }
-
-    /**
-     * Create permissions for all resources
-     */
-    protected function createPermissions(): self
-    {
-        $resources = [
-            'country',
-            'currency',
-            'post',
-            'region',
-            'tariff_code',
-        ];
-
-        $permissions = [
-            'view_any',
-            'view',
-            'create',
-            'update',
-            'restore',
-            'restore_any',
-            'delete',
-            'delete_any',
-            'force_delete',
-            'force_delete_any',
-        ];
-
-        foreach ($resources as $resource) {
-            foreach ($permissions as $permission) {
-                Permission::create([
-                    'name' => $permission.'_'.$resource,
-                    'guard_name' => 'web',
-                ]);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * Create roles
-     */
-    protected function createRoles(): self
-    {
-        Role::create([
-            'name' => 'super_admin',
-            'guard_name' => 'web',
-        ]);
-
-        Role::create([
-            'name' => 'panel_user',
-            'guard_name' => 'web',
-        ]);
-
-        return $this;
     }
 }

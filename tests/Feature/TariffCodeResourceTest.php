@@ -21,43 +21,6 @@ class MockLocale
     }
 }
 
-beforeEach(function () {
-    $this->setUpSuperAdmin();
-});
-
-test('unauthorized access can be prevented', function () {
-    // Create regular user with no permissions
-    $this->setUpCommonUser();
-
-    // Create test data
-    $tariffCode = TariffCode::factory()->create();
-
-    // View table
-    $this->get(TariffCodeResource::getUrl())
-        ->assertForbidden();
-
-    // Add direct permission to view the table, since otherwise any other action below is not available even for testing
-    $this->user->givePermissionTo('view_any_tariff_code');
-
-    // Create tariff code
-    livewire(ListTariffCodes::class)
-        ->assertActionDisabled('create');
-
-    // Edit tariff code
-    livewire(ListTariffCodes::class)
-        ->assertCanSeeTableRecords([$tariffCode])
-        ->assertTableActionDisabled('edit', $tariffCode);
-
-    // Delete tariff code
-    livewire(ListTariffCodes::class)
-        ->assertTableActionDisabled('delete', $tariffCode)
-        ->assertTableBulkActionDisabled('delete');
-
-    // Restore and force delete
-    $tariffCode->delete();
-    $this->assertSoftDeleted($tariffCode);
-});
-
 test('tariff codes table can be displayed', function () {
     $this->get(TariffCodeResource::getUrl())
         ->assertSuccessful();

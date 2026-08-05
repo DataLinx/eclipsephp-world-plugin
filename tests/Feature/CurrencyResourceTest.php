@@ -8,42 +8,6 @@ use Illuminate\Support\Arr;
 
 use function Pest\Livewire\livewire;
 
-beforeEach(function () {
-    $this->setUpSuperAdmin();
-});
-
-test('unauthorized access can be prevented', function () {
-    // Create regular user with no permissions
-    $this->setUpCommonUser();
-
-    // Create test currency
-    $currency = Currency::factory()->create();
-
-    // View table
-    $this->get(CurrencyResource::getUrl())
-        ->assertForbidden();
-
-    // Add direct permission to view the table, since otherwise any other action below is not available even for testing
-    $this->user->givePermissionTo('view_any_currency');
-
-    // Create currency
-    livewire(ListCurrencies::class)
-        ->assertActionDisabled('create');
-
-    // Edit currency
-    livewire(ListCurrencies::class)
-        ->assertCanSeeTableRecords([$currency])
-        ->assertTableActionDisabled('edit', $currency);
-
-    // Delete currency
-    livewire(ListCurrencies::class)
-        ->assertTableActionDisabled('delete', $currency)
-        ->assertTableBulkActionDisabled('delete');
-
-    $currency->delete();
-    $this->assertSoftDeleted($currency);
-});
-
 test('currencies table can be displayed', function () {
     $this->get(CurrencyResource::getUrl())
         ->assertSuccessful();

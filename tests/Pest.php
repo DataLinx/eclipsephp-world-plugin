@@ -20,11 +20,7 @@ uses(TestCase::class)
         // Migrate database and seed permissions manually
         $this->migrate();
 
-        // Create permissions manually for all resources
-        $this->createPermissions();
-
-        // Create roles
-        $this->createRoles();
+        $this->setUpUser();
     })
     ->in(__DIR__);
 

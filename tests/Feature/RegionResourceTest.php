@@ -7,43 +7,6 @@ use Filament\Actions\Testing\TestAction;
 
 use function Pest\Livewire\livewire;
 
-beforeEach(function () {
-    $this->setUpSuperAdmin();
-});
-
-test('unauthorized access can be prevented', function () {
-    // Create regular user with no permissions
-    $this->setUpCommonUser();
-
-    // Create test region
-    $region = Region::factory()->create();
-
-    // View table
-    $this->get(RegionResource::getUrl())
-        ->assertForbidden();
-
-    // Add direct permission to view the table, since otherwise any other action below is not available even for testing
-    $this->user->givePermissionTo('view_any_region');
-
-    // Create region
-    livewire(ListRegions::class)
-        ->assertActionDisabled('create');
-
-    // Edit region
-    livewire(ListRegions::class)
-        ->assertCanSeeTableRecords([$region])
-        ->assertTableActionDisabled('edit', $region);
-
-    // Delete region
-    livewire(ListRegions::class)
-        ->assertTableActionDisabled('delete', $region)
-        ->assertTableBulkActionDisabled('delete');
-
-    // Restore and force delete
-    $region->delete();
-    $this->assertSoftDeleted($region);
-});
-
 test('regions table can be displayed', function () {
     $this->get(RegionResource::getUrl())
         ->assertSuccessful();

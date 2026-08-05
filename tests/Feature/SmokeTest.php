@@ -5,10 +5,6 @@ use Eclipse\World\Filament\Clusters\World\Resources\CurrencyResource;
 use Eclipse\World\Filament\Clusters\World\Resources\PostResource;
 use Eclipse\World\Filament\Clusters\World\Resources\RegionResource;
 
-beforeEach(function () {
-    $this->setUpSuperAdmin();
-});
-
 describe('Smoke Tests', function () {
     test('all resource URLs are accessible', function () {
         $resources = [
