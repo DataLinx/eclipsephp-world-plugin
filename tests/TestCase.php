@@ -23,6 +23,20 @@ abstract class TestCase extends BaseTestCase
         $this->withoutVite();
     }
 
+    protected function defineEnvironment($app): void
+    {
+        parent::defineEnvironment($app);
+
+        $token = getenv('TEST_TOKEN') ?: 'default';
+        $path = $app->storagePath("framework/views/$token");
+
+        if (! is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        $app['config']->set('view.compiled', $path);
+    }
+
     /**
      * Run database migrations
      */
